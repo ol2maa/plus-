@@ -336,31 +336,85 @@ function initAudio() {
     }
 }
 
+function playTone(frequency, startTime, duration, volume, type) {
+    if (!audioContext) return;
+
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    oscillator.type = type || "sine";
+    oscillator.frequency.setValueAtTime(frequency, startTime);
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+
+    gain.gain.setValueAtTime(0.001, startTime);
+    gain.gain.exponentialRampToValueAtTime(volume, startTime + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+
+    oscillator.start(startTime);
+    oscillator.stop(startTime + duration + 0.02);
+}
+
 function playSound(correct) {
     try {
         initAudio();
         if (!audioContext) return;
 
-        const oscillator = audioContext.createOscillator();
-        const gain = audioContext.createGain();
-
-        oscillator.connect(gain);
-        gain.connect(audioContext.destination);
+        const now = audioContext.currentTime;
 
         if (correct) {
-            oscillator.frequency.setValueAtTime(660, audioContext.currentTime);
-            oscillator.frequency.setValueAtTime(880, audioContext.currentTime + 0.10);
+            // صوت الإجابة الصحيحة
+            playTone(660, now, 0.10, 0.12, "sine");
+            playTone(880, now + 0.09, 0.14, 0.14, "sine");
         } else {
-            oscillator.frequency.setValueAtTime(220, audioContext.currentTime);
-            oscillator.frequency.setValueAtTime(160, audioContext.currentTime + 0.12);
+            // صوت الإجابة الخاطئة
+            playTone(240, now, 0.16, 0.14, "sawtooth");
+            playTone(170, now + 0.13, 0.20, 0.12, "sawtooth");
         }
+    } catch (e) {}
+}
 
-        gain.gain.setValueAtTime(0.001, audioContext.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.12, audioContext.currentTime + 0.01);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.20);
+function playTimeoutSound() {
+    try {
+        initAudio();
+        if (!audioContext) return;
 
-        oscillator.start();
-        oscillator.stop(audioContext.currentTime + 0.21);
+        const now = audioContext.currentTime;
+
+        // صوت مختلف لانتهاء الوقت
+        playTone(520, now, 0.12, 0.12, "square");
+        playTone(420, now + 0.13, 0.12, 0.12, "square");
+        playTone(320, now + 0.26, 0.20, 0.14, "square");
+    } catch (e) {}
+}
+
+function playLevelUpSound() {
+    try {
+        initAudio();
+        if (!audioContext) return;
+
+        const now = audioContext.currentTime;
+
+        // نغمة صعود للمستوى الجديد
+        playTone(523, now, 0.12, 0.11, "sine");
+        playTone(659, now + 0.10, 0.12, 0.12, "sine");
+        playTone(784, now + 0.20, 0.12, 0.13, "sine");
+        playTone(1047, now + 0.31, 0.22, 0.15, "sine");
+    } catch (e) {}
+}
+
+function playGameOverSound() {
+    try {
+        initAudio();
+        if (!audioContext) return;
+
+        const now = audioContext.currentTime;
+
+        // نغمة نهاية اللعبة
+        playTone(392, now, 0.15, 0.12, "sine");
+        playTone(330, now + 0.14, 0.15, 0.12, "sine");
+        playTone(262, now + 0.28, 0.25, 0.14, "sine");
     } catch (e) {}
 }
 
@@ -453,7 +507,7 @@ function timerFinished(myQuestionId) {
     waiting = true;
 
     updateTimerVisual(0);
-    playSound(false);
+    playTimeoutSound();
 
     // انتهاء الوقت = خطأ واحد
     mistakes++;
@@ -680,6 +734,8 @@ function answerPressed(event) {
             setMessage("🎉 ممتاز!\nانتقلت للمستوى التالي", "purple-text");
             updateLabels();
 
+            playLevelUpSound();
+
             newQuestion();
         } else {
             newQuestion();
@@ -729,12 +785,19 @@ function finishGame() {
     const completedAll = achievedLevel >= levels.length - 1;
 
     if (completedAll) {
+        playLevelUpSound();
+        setTimeout(function() {
+            playGameOverSound();
+        }, 500);
+
         setMessage(
             `أكملت جميع المستويات!\n\n⭐ النقاط: ${score}\n🔥 أعلى سلسلة: ${bestStreak}`,
             ""
         );
     } else {
         const reachedLevel = achievedLevel + 1;
+
+        playGameOverSound();
 
         setMessage(
             `أحسنت! 👏\n\nوصلت إلى: المستوى ${reachedLevel}\n\n⭐ النقاط: ${score}\n🔥 أعلى سلسلة: ${bestStreak}`,
