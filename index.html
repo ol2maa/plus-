@@ -1,1 +1,767 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>تحدي الجمع</title>
+<style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+        margin: 0;
+        padding: 0;
+        min-height: 100%;
+        font-family: -apple-system, BlinkMacSystemFont, "Arial", sans-serif;
+        background: #f2f2f7;
+        color: #222;
+        user-select: none;
+        -webkit-user-select: none;
+    }
 
+    body {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        overflow-x: hidden;
+    }
+
+    .game {
+        width: min(100%, 520px);
+        min-height: 100vh;
+        padding: 18px 18px 28px;
+        text-align: center;
+    }
+
+    h1 {
+        margin: 2px 0 8px;
+        font-size: 30px;
+        line-height: 1.2;
+    }
+
+    .level {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .progress {
+        font-size: 17px;
+        color: #666;
+        margin-bottom: 14px;
+    }
+
+    /* =========================
+       شريط الوقت
+       ========================= */
+    .timer-wrap {
+        width: 100%;
+        margin: 0 auto 18px;
+    }
+
+    .timer-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .timer-track,
+    .mistake-track {
+        width: 100%;
+        height: 12px;
+        background: #d9d9de;
+        border-radius: 999px;
+        overflow: hidden;
+    }
+
+    .timer-bar {
+        width: 100%;
+        height: 100%;
+        background: #34c759;
+        border-radius: inherit;
+        transition: width .08s linear, background-color .2s ease;
+    }
+
+    /* =========================
+       شريط الأخطاء
+       ========================= */
+    .mistakes-wrap {
+        margin: 0 auto 20px;
+    }
+
+    .mistakes-title {
+        display: flex;
+        justify-content: space-between;
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    .mistake-bar {
+        width: 0%;
+        height: 100%;
+        background: #ff3b30;
+        border-radius: inherit;
+        transition: width .2s ease;
+    }
+
+    /* =========================
+       المسألة
+       ========================= */
+    .equation {
+        display: flex;
+        direction: ltr;
+        justify-content: center;
+        align-items: center;
+        gap: 9px;
+        margin: 8px 0 18px;
+    }
+
+    .number-box {
+        width: 88px;
+        height: 88px;
+        border-radius: 18px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 40px;
+        font-weight: 800;
+        box-shadow: 0 3px 8px rgba(0,0,0,.08);
+    }
+
+    .blue { background: #3478f6; }
+    .green { background: #34c759; }
+
+    .operator {
+        font-size: 35px;
+        font-weight: 800;
+        width: 25px;
+    }
+
+    /* =========================
+       الإجابات
+       ========================= */
+    .answers {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        direction: ltr;
+        margin: 0 auto 22px;
+        width: 100%;
+        min-height: 70px;
+    }
+
+    .answer {
+        display: block;
+        width: 100%;
+        height: 70px;
+        border: 0;
+        border-radius: 18px;
+        background: #5856d6;
+        color: white;
+        font-size: 30px;
+        font-weight: 800;
+        cursor: pointer;
+        touch-action: manipulation;
+        box-shadow: 0 3px 7px rgba(0,0,0,.08);
+    }
+
+    .answer:active { transform: scale(.97); }
+    .answer:disabled { cursor: default; opacity: 1; }
+
+    .correct { background: #34c759 !important; }
+    .wrong { background: #ff3b30 !important; }
+
+    .message {
+        min-height: 125px;
+        font-size: 21px;
+        font-weight: 700;
+        line-height: 1.55;
+        white-space: pre-line;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 4px 5px;
+    }
+
+    .message.green-text { color: #34c759; }
+    .message.red-text { color: #ff3b30; }
+    .message.purple-text { color: #5856d6; }
+
+    .restart {
+        display: none;
+        width: 64%;
+        height: 55px;
+        margin: 8px auto 0;
+        border: 0;
+        border-radius: 16px;
+        background: #5856d6;
+        color: white;
+        font-size: 21px;
+        font-weight: 800;
+        cursor: pointer;
+    }
+
+    @media (max-width: 360px) {
+        .game { padding-left: 12px; padding-right: 12px; }
+        .number-box { width: 78px; height: 78px; font-size: 35px; }
+        .answer { font-size: 27px; }
+    }
+</style>
+</head>
+
+<body>
+<div class="game">
+    <h1>🧮 تحدي الجمع</h1>
+
+    <div class="level" id="levelLabel"></div>
+    <div class="progress" id="progressLabel"></div>
+
+    <div class="timer-wrap">
+        <div class="timer-top">
+            <span>⏱ الوقت</span>
+            <span id="timerText">10 ث</span>
+        </div>
+        <div class="timer-track">
+            <div class="timer-bar" id="timerBar"></div>
+        </div>
+    </div>
+
+    <div class="mistakes-wrap">
+        <div class="mistakes-title">
+            <span>❌ الأخطاء</span>
+            <span id="mistakesText">0 / 5</span>
+        </div>
+        <div class="mistake-track">
+            <div class="mistake-bar" id="mistakeBar"></div>
+        </div>
+    </div>
+
+    <div class="equation">
+        <div class="number-box blue" id="box1">1</div>
+        <div class="operator">+</div>
+        <div class="number-box green" id="box2">1</div>
+        <div class="operator">=</div>
+    </div>
+
+    <div class="answers" id="answers"></div>
+
+    <div class="message" id="message"></div>
+
+    <button class="restart" id="restartButton">إعادة اللعب</button>
+</div>
+
+<script>
+"use strict";
+
+/* =========================================
+   إعدادات اللعبة
+   ========================================= */
+const TIME_LIMIT = 10;
+const MAX_MISTAKES = 5;
+
+const levels = [
+    [1, 5],
+    [5, 10],
+    [10, 20],
+    [20, 30],
+    [30, 40],
+    [40, 50],
+    [50, 60],
+    [60, 70],
+    [70, 80],
+    [80, 90],
+    [90, 100]
+];
+
+/* =========================================
+   حالة اللعبة
+   ========================================= */
+let level = 0;
+let correctCount = 0;
+let mistakes = 0;
+let achievedLevel = -1;
+
+let score = 0;
+let streak = 0;
+let bestStreak = 0;
+
+let number1 = 0;
+let number2 = 0;
+let correctAnswer = 0;
+let correctPosition = 0;
+let previousCorrectPosition = -1;
+let previousQuestion = null;
+
+let gameOver = false;
+let waiting = false;
+
+let timerInterval = null;
+let questionId = 0;
+let questionStart = 0;
+
+/* =========================================
+   عناصر الواجهة
+   ========================================= */
+const levelLabel = document.getElementById("levelLabel");
+const progressLabel = document.getElementById("progressLabel");
+const timerText = document.getElementById("timerText");
+const timerBar = document.getElementById("timerBar");
+const mistakesText = document.getElementById("mistakesText");
+const mistakeBar = document.getElementById("mistakeBar");
+const box1 = document.getElementById("box1");
+const box2 = document.getElementById("box2");
+const answersBox = document.getElementById("answers");
+const message = document.getElementById("message");
+const restartButton = document.getElementById("restartButton");
+
+/* =========================================
+   الصوت - Web Audio API
+   لا يحتاج أي ملفات خارجية
+   ========================================= */
+let audioContext = null;
+
+function initAudio() {
+    if (!audioContext) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) audioContext = new AudioCtx();
+    }
+
+    if (audioContext && audioContext.state === "suspended") {
+        audioContext.resume().catch(() => {});
+    }
+}
+
+function playSound(correct) {
+    try {
+        initAudio();
+        if (!audioContext) return;
+
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
+
+        if (correct) {
+            oscillator.frequency.setValueAtTime(660, audioContext.currentTime);
+            oscillator.frequency.setValueAtTime(880, audioContext.currentTime + 0.10);
+        } else {
+            oscillator.frequency.setValueAtTime(220, audioContext.currentTime);
+            oscillator.frequency.setValueAtTime(160, audioContext.currentTime + 0.12);
+        }
+
+        gain.gain.setValueAtTime(0.001, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.12, audioContext.currentTime + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.20);
+
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.21);
+    } catch (e) {}
+}
+
+/* =========================================
+   أدوات مساعدة
+   ========================================= */
+function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function updateLabels() {
+    levelLabel.textContent = `المستوى ${level + 1} من ${levels.length}`;
+
+    progressLabel.textContent =
+        `✅ ${correctCount} / 5     ⭐ ${score}     🔥 ${streak}`;
+
+    mistakesText.textContent = `${mistakes} / ${MAX_MISTAKES}`;
+    mistakeBar.style.width = `${Math.min(100, mistakes / MAX_MISTAKES * 100)}%`;
+}
+
+function setMessage(text, type = "") {
+    message.textContent = text;
+    message.className = "message";
+    if (type) message.classList.add(type);
+}
+
+/* =========================================
+   شريط الوقت
+   ========================================= */
+function updateTimerVisual(remaining) {
+    const fraction = Math.max(0, Math.min(1, remaining / TIME_LIMIT));
+    timerBar.style.width = `${fraction * 100}%`;
+    timerText.textContent = `${Math.ceil(remaining)} ث`;
+
+    if (fraction > 0.60) {
+        timerBar.style.backgroundColor = "#34c759";
+    } else if (fraction > 0.30) {
+        timerBar.style.backgroundColor = "#ff9500";
+    } else {
+        timerBar.style.backgroundColor = "#ff3b30";
+    }
+
+    if (remaining <= 0) {
+        timerText.textContent = "0 ث";
+        timerBar.style.backgroundColor = "#ff3b30";
+    }
+}
+
+function stopQuestionTimer() {
+    if (timerInterval !== null) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+    questionId++;
+}
+
+function startQuestionTimer() {
+    stopQuestionTimer();
+
+    const myQuestionId = questionId;
+    questionStart = performance.now();
+
+    updateTimerVisual(TIME_LIMIT);
+
+    timerInterval = setInterval(() => {
+        if (gameOver || waiting || myQuestionId !== questionId) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            return;
+        }
+
+        const elapsed = (performance.now() - questionStart) / 1000;
+        const remaining = TIME_LIMIT - elapsed;
+
+        updateTimerVisual(remaining);
+
+        if (remaining <= 0) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerFinished(myQuestionId);
+        }
+    }, 50);
+}
+
+function timerFinished(myQuestionId) {
+    if (gameOver || waiting || myQuestionId !== questionId) return;
+
+    questionId++;
+    waiting = true;
+
+    updateTimerVisual(0);
+    playSound(false);
+
+    mistakes++;
+    streak = 0;
+
+    disableAnswers();
+    updateLabels();
+
+    setMessage("⌛ انتهى الوقت — اضغط إجابة للمتابعة", "red-text");
+}
+
+/* =========================================
+   إنشاء الإجابات
+   ========================================= */
+function createAnswers() {
+    const correct = correctAnswer;
+
+    // اختيار إجابتين خاطئتين مختلفتين
+    let wrong1 = correct + randomInt(1, 5);
+    let wrong2 = correct - randomInt(1, 5);
+
+    if (wrong2 < 0) {
+        wrong2 = correct + randomInt(6, 10);
+    }
+
+    if (wrong1 === wrong2) {
+        wrong2 = correct + 7;
+    }
+
+    let answers = [correct, wrong1, wrong2];
+
+    // اختيار مكان الإجابة الصحيحة
+    let possiblePositions = [0, 1, 2];
+
+    if (previousCorrectPosition >= 0) {
+        possiblePositions = possiblePositions.filter(
+            function(p) { return p !== previousCorrectPosition; }
+        );
+    }
+
+    correctPosition =
+        possiblePositions[randomInt(0, possiblePositions.length - 1)];
+
+    previousCorrectPosition = correctPosition;
+
+    // وضع الإجابة الصحيحة في مكانها
+    let correctIndex = answers.indexOf(correct);
+
+    let temp = answers[correctIndex];
+    answers[correctIndex] = answers[correctPosition];
+    answers[correctPosition] = temp;
+
+    // إنشاء المربعات
+    answersBox.innerHTML = "";
+
+    for (let i = 0; i < 3; i++) {
+        let button = document.createElement("button");
+
+        button.className = "answer";
+        button.textContent = String(answers[i]);
+        button.setAttribute("data-position", String(i));
+
+        button.addEventListener("click", answerPressed);
+
+        answersBox.appendChild(button);
+    }
+}
+
+function getAnswerButtons() {
+    return Array.from(document.querySelectorAll(".answer"));
+}
+
+function disableAnswers() {
+    getAnswerButtons().forEach(button => {
+        button.disabled = true;
+    });
+}
+
+function enableAnswers() {
+    getAnswerButtons().forEach(button => {
+        button.disabled = false;
+        button.className = "answer";
+    });
+}
+
+/* =========================================
+   سؤال جديد
+   ========================================= */
+function newQuestion() {
+    if (gameOver) return;
+
+    waiting = false;
+
+    const [minimum, maximum] = levels[level];
+
+    let n1, n2, question;
+
+    do {
+        if (level < 3) {
+            n1 = randomInt(minimum, maximum);
+            n2 = randomInt(minimum, maximum);
+        } else {
+            const randomPosition = randomInt(1, 2);
+
+            if (randomPosition === 1) {
+                n1 = randomInt(1, maximum);
+                n2 = randomInt(minimum, maximum);
+            } else {
+                n1 = randomInt(minimum, maximum);
+                n2 = randomInt(1, maximum);
+            }
+        }
+
+        question = [n1, n2].join(",");
+    } while (question === previousQuestion);
+
+    previousQuestion = question;
+
+    number1 = n1;
+    number2 = n2;
+    correctAnswer = number1 + number2;
+
+    box1.textContent = number1;
+    box2.textContent = number2;
+
+    createAnswers();
+    enableAnswers();
+
+    setMessage("");
+    updateLabels();
+    startQuestionTimer();
+}
+
+/* =========================================
+   النقاط - نفس طريقة Python الحالية
+   ========================================= */
+function calculatePoints() {
+    let points = 10;
+
+    if (streak >= 3) points += 5;
+    if (streak >= 5) points += 5;
+
+    return points;
+}
+
+/* =========================================
+   الإجابة
+   ========================================= */
+function answerPressed(event) {
+    initAudio();
+
+    const sender = event.currentTarget;
+
+    // إذا انتهى الوقت:
+    // أي إجابة تضغط عليها تنقلك للسؤال التالي
+    // بدون احتساب إجابة صحيحة أو خاطئة إضافية.
+    if (waiting && !gameOver) {
+        if (timerText.textContent === "0 ث") {
+            newQuestion();
+        }
+        return;
+    }
+
+    if (gameOver || waiting) return;
+
+    stopQuestionTimer();
+    waiting = true;
+    disableAnswers();
+
+    const selectedPosition = Number(sender.dataset.position);
+
+    /* =========================
+       صحيحة
+       ========================= */
+    if (selectedPosition === correctPosition) {
+        playSound(true);
+
+        correctCount++;
+        streak++;
+
+        bestStreak = Math.max(bestStreak, streak);
+
+        const points = calculatePoints();
+        score += points;
+
+        achievedLevel = Math.max(achievedLevel, level);
+
+        sender.classList.add("correct");
+
+        if (streak >= 5) {
+            setMessage(`✓ إجابة صحيحة!\n🔥🔥 سلسلة ×${streak}`, "green-text");
+        } else if (streak >= 3) {
+            setMessage(`✓ إجابة صحيحة!\n🔥 سلسلة ×${streak}`, "green-text");
+        } else {
+            setMessage(`✓ إجابة صحيحة!\n+${points} ⭐`, "green-text");
+        }
+
+        updateLabels();
+
+        if (correctCount >= 5) {
+            if (level >= levels.length - 1) {
+                achievedLevel = levels.length - 1;
+                finishGame();
+                return;
+            }
+
+            level++;
+            achievedLevel = Math.max(achievedLevel, level);
+            correctCount = 0;
+
+            setMessage("🎉 ممتاز!\nانتقلت للمستوى التالي", "purple-text");
+            updateLabels();
+
+            newQuestion();
+        } else {
+            newQuestion();
+        }
+
+    /* =========================
+       خاطئة
+       ========================= */
+    } else {
+        playSound(false);
+
+        mistakes++;
+        streak = 0;
+
+        sender.classList.add("wrong");
+
+        const buttons = getAnswerButtons();
+        if (buttons[correctPosition]) {
+            buttons[correctPosition].classList.add("correct");
+        }
+
+        setMessage(`✗ إجابة خاطئة\nالصحيح: ${correctAnswer}`, "red-text");
+        updateLabels();
+
+        if (mistakes >= MAX_MISTAKES) {
+            finishGame();
+            return;
+        }
+
+        newQuestion();
+    }
+}
+
+/* =========================================
+   نهاية اللعبة
+   ========================================= */
+function finishGame() {
+    stopQuestionTimer();
+
+    if (gameOver) return;
+
+    gameOver = true;
+    waiting = true;
+
+    disableAnswers();
+
+    const completedAll = achievedLevel >= levels.length - 1;
+
+    if (completedAll) {
+        setMessage(
+            `أكملت جميع المستويات!\n\n⭐ النقاط: ${score}\n🔥 أعلى سلسلة: ${bestStreak}`,
+            ""
+        );
+    } else {
+        const reachedLevel = achievedLevel + 1;
+
+        setMessage(
+            `أحسنت! 👏\n\nوصلت إلى: المستوى ${reachedLevel}\n\n⭐ النقاط: ${score}\n🔥 أعلى سلسلة: ${bestStreak}`,
+            ""
+        );
+    }
+
+    restartButton.style.display = "block";
+}
+
+/* =========================================
+   إعادة اللعبة
+   ========================================= */
+restartButton.addEventListener("click", () => {
+    initAudio();
+
+    stopQuestionTimer();
+
+    level = 0;
+    correctCount = 0;
+    mistakes = 0;
+    achievedLevel = -1;
+
+    score = 0;
+    streak = 0;
+    bestStreak = 0;
+
+    previousCorrectPosition = -1;
+    previousQuestion = null;
+
+    gameOver = false;
+    waiting = false;
+
+    restartButton.style.display = "none";
+    setMessage("");
+
+    newQuestion();
+});
+
+/* تشغيل اللعبة */
+updateLabels();
+newQuestion();
+</script>
+</body>
+</html>
