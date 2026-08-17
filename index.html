@@ -359,7 +359,8 @@
                 <p>8️⃣ 🏆 الهدف هو إكمال جميع <strong>11 مستوى</strong> وتحقيق أعلى نقاط.</p>
 
                 <div class="speed-note">
-                    ⚡ كلما كانت إجابتك أسرع، زادت نقاطك!
+                    ⚡ كلما كانت إجابتك أسرع، زادت نقاطك!<br>
+🎯 إكمال المستوى بدون أخطاء يمنحك +50 نقطة.
                 </div>
             </div>
 
@@ -397,6 +398,7 @@ const levels = [
 let level = 0;
 let correctCount = 0;
 let mistakes = 0;
+let levelMistakes = 0;
 let achievedLevel = -1;
 
 let score = 0;
@@ -678,6 +680,7 @@ function timerFinished(myQuestionId) {
 
     // انتهاء الوقت = خطأ واحد
     mistakes++;
+    levelMistakes++;
     streak = 0;
 
     disableAnswers();
@@ -835,12 +838,14 @@ function newQuestion() {
    النقاط - نفس طريقة Python الحالية
    ========================================= */
 function calculatePoints() {
-    let points = 10;
+    // 10 نقاط أساسية + 5 نقاط لكل ثانية كاملة متبقية.
+    const elapsed = (performance.now() - questionStart) / 1000;
+    const remainingSeconds = Math.max(
+        0,
+        Math.min(TIME_LIMIT, Math.ceil(TIME_LIMIT - elapsed))
+    );
 
-    if (streak >= 3) points += 5;
-    if (streak >= 5) points += 5;
-
-    return points;
+    return 10 + (remainingSeconds * 5);
 }
 
 /* =========================================
@@ -878,9 +883,9 @@ function answerPressed(event) {
         sender.classList.add("correct");
 
         if (streak >= 5) {
-            setMessage(`✓ إجابة صحيحة!\n🔥🔥 سلسلة ×${streak}`, "green-text");
+            setMessage(`✓ إجابة صحيحة!\n+${points} ⭐\n🔥🔥 سلسلة ×${streak}`, "green-text");
         } else if (streak >= 3) {
-            setMessage(`✓ إجابة صحيحة!\n🔥 سلسلة ×${streak}`, "green-text");
+            setMessage(`✓ إجابة صحيحة!\n+${points} ⭐\n🔥 سلسلة ×${streak}`, "green-text");
         } else {
             setMessage(`✓ إجابة صحيحة!\n+${points} ⭐`, "green-text");
         }
@@ -890,6 +895,11 @@ function answerPressed(event) {
         if (correctCount >= 5) {
             if (level >= levels.length - 1) {
                 achievedLevel = levels.length - 1;
+
+                if (levelMistakes === 0) {
+                    score += 50;
+                }
+
                 finishGame();
                 return;
             }
@@ -898,7 +908,14 @@ function answerPressed(event) {
             achievedLevel = Math.max(achievedLevel, level);
             correctCount = 0;
 
-            setMessage("🎉 ممتاز!\nانتقلت للمستوى التالي", "purple-text");
+            if (levelMistakes === 0) {
+                score += 50;
+                setMessage("🎉 ممتاز!\n+50 🎯 مستوى بدون أخطاء", "purple-text");
+            } else {
+                setMessage("🎉 ممتاز!\nانتقلت للمستوى التالي", "purple-text");
+            }
+
+            levelMistakes = 0;
             updateLabels();
 
             playLevelUpSound();
@@ -915,6 +932,7 @@ function answerPressed(event) {
         playSound(false);
 
         mistakes++;
+        levelMistakes++;
         streak = 0;
 
         sender.classList.add("wrong");
@@ -986,6 +1004,7 @@ restartButton.addEventListener("click", () => {
     level = 0;
     correctCount = 0;
     mistakes = 0;
+    levelMistakes = 0;
     achievedLevel = -1;
 
     score = 0;
