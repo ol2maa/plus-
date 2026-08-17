@@ -281,7 +281,7 @@
     }
 
     .restart {
-        display: none;
+        display: block;
         width: 64%;
         height: 55px;
         margin: 8px auto 0;
@@ -416,6 +416,8 @@ let waiting = false;
 let timerInterval = null;
 let questionId = 0;
 let questionStart = 0;
+let pausedByHelp = false;
+let pausedRemaining = TIME_LIMIT;
 
 /* =========================================
    عناصر الواجهة
@@ -587,8 +589,57 @@ function stopQuestionTimer() {
     questionId++;
 }
 
+function pauseTimerForHelp() {
+    if (gameOver || waiting || pausedByHelp) return;
+
+    const elapsed = (performance.now() - questionStart) / 1000;
+    pausedRemaining = Math.max(0, TIME_LIMIT - elapsed);
+
+    if (timerInterval !== null) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+
+    pausedByHelp = true;
+    updateTimerVisual(pausedRemaining);
+}
+
+function resumeTimerAfterHelp() {
+    if (!pausedByHelp || gameOver || waiting) return;
+
+    pausedByHelp = false;
+
+    // نكمل من نفس اللحظة التي توقف عندها المؤقت
+    questionStart =
+        performance.now() - (TIME_LIMIT - pausedRemaining) * 1000;
+
+    const myQuestionId = questionId;
+
+    timerInterval = setInterval(() => {
+        if (gameOver || waiting || pausedByHelp || myQuestionId !== questionId) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            return;
+        }
+
+        const elapsed = (performance.now() - questionStart) / 1000;
+        const remaining = TIME_LIMIT - elapsed;
+
+        updateTimerVisual(remaining);
+
+        if (remaining <= 0) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerFinished(myQuestionId);
+        }
+    }, 50);
+}
+
 function startQuestionTimer() {
     stopQuestionTimer();
+
+    pausedByHelp = false;
+    pausedRemaining = TIME_LIMIT;
 
     const myQuestionId = questionId;
     questionStart = performance.now();
@@ -946,8 +997,10 @@ restartButton.addEventListener("click", () => {
 
     gameOver = false;
     waiting = false;
+    pausedByHelp = false;
+    pausedRemaining = TIME_LIMIT;
 
-    restartButton.style.display = "none";
+    restartButton.style.display = "block";
     setMessage("");
 
     newQuestion();
@@ -956,16 +1009,25 @@ restartButton.addEventListener("click", () => {
 /* كيفية اللعب */
 howToPlayButton.addEventListener("click", function() {
     initAudio();
+
+    // إيقاف العد التنازلي أثناء قراءة التعليمات
+    pauseTimerForHelp();
+
     howToPlayModal.classList.add("show");
 });
 
-closeHowToPlay.addEventListener("click", function() {
+function closeHowToPlayModal() {
     howToPlayModal.classList.remove("show");
-});
+
+    // استكمال العد من نفس النقطة التي توقف عندها
+    resumeTimerAfterHelp();
+}
+
+closeHowToPlay.addEventListener("click", closeHowToPlayModal);
 
 howToPlayModal.addEventListener("click", function(event) {
     if (event.target === howToPlayModal) {
-        howToPlayModal.classList.remove("show");
+        closeHowToPlayModal();
     }
 });
 
