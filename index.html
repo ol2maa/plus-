@@ -448,19 +448,44 @@ function startQuestionTimer() {
 function timerFinished(myQuestionId) {
     if (gameOver || waiting || myQuestionId !== questionId) return;
 
+    // إيقاف السؤال الحالي ومنع الضغط عليه مؤقتًا
     questionId++;
     waiting = true;
 
     updateTimerVisual(0);
     playSound(false);
 
+    // انتهاء الوقت = خطأ واحد
     mistakes++;
     streak = 0;
 
     disableAnswers();
     updateLabels();
 
-    setMessage("⌛ انتهى الوقت — اضغط إجابة للمتابعة", "red-text");
+    // لا نطلب من اللاعب الضغط على إجابة بعد انتهاء الوقت.
+    // ننتقل تلقائيًا للسؤال التالي حتى لا تتجمد اللعبة.
+    if (mistakes >= MAX_MISTAKES) {
+        setMessage("⌛ انتهى الوقت", "red-text");
+
+        setTimeout(function() {
+            if (!gameOver) {
+                finishGame();
+            }
+        }, 450);
+
+        return;
+    }
+
+    setMessage("⌛ انتهى الوقت", "red-text");
+
+    const timeoutQuestionId = questionId;
+
+    setTimeout(function() {
+        // التأكد أن المؤقت القديم لم يعد مرتبطًا باللعبة
+        if (gameOver || timeoutQuestionId !== questionId) return;
+
+        newQuestion();
+    }, 450);
 }
 
 /* =========================================
@@ -604,16 +629,6 @@ function answerPressed(event) {
     initAudio();
 
     const sender = event.currentTarget;
-
-    // إذا انتهى الوقت:
-    // أي إجابة تضغط عليها تنقلك للسؤال التالي
-    // بدون احتساب إجابة صحيحة أو خاطئة إضافية.
-    if (waiting && !gameOver) {
-        if (timerText.textContent === "0 ث") {
-            newQuestion();
-        }
-        return;
-    }
 
     if (gameOver || waiting) return;
 
