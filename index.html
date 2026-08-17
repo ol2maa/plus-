@@ -192,6 +192,94 @@
     .message.red-text { color: #ff3b30; }
     .message.purple-text { color: #5856d6; }
 
+    .how-to-play {
+        display: block;
+        width: 64%;
+        height: 52px;
+        margin: 10px auto 0;
+        border: 0;
+        border-radius: 16px;
+        background: #ff9500;
+        color: white;
+        font-size: 20px;
+        font-weight: 800;
+        cursor: pointer;
+        touch-action: manipulation;
+    }
+
+    .how-to-play:active,
+    .close-how:active {
+        transform: scale(.98);
+    }
+
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(0, 0, 0, .42);
+    }
+
+    .modal-overlay.show {
+        display: flex;
+    }
+
+    .how-to-play-box {
+        width: min(100%, 470px);
+        max-height: 88vh;
+        overflow-y: auto;
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 24px 20px 20px;
+        box-shadow: 0 12px 40px rgba(0,0,0,.20);
+        text-align: right;
+    }
+
+    .how-title {
+        text-align: center;
+        font-size: 28px;
+        font-weight: 900;
+        margin-bottom: 18px;
+    }
+
+    .how-content {
+        font-size: 18px;
+        line-height: 1.55;
+    }
+
+    .how-content p {
+        margin: 9px 0;
+    }
+
+    .speed-note {
+        margin: 18px 0 8px;
+        padding: 14px 12px;
+        border-radius: 15px;
+        background: #fff3d6;
+        color: #9a5b00;
+        text-align: center;
+        font-size: 19px;
+        font-weight: 900;
+    }
+
+    .close-how {
+        display: block;
+        width: 100%;
+        height: 52px;
+        margin-top: 18px;
+        border: 0;
+        border-radius: 15px;
+        background: #5856d6;
+        color: white;
+        font-size: 19px;
+        font-weight: 800;
+        cursor: pointer;
+        touch-action: manipulation;
+    }
+
     .restart {
         display: none;
         width: 64%;
@@ -252,7 +340,32 @@
 
     <div class="message" id="message"></div>
 
+    <button class="how-to-play" id="howToPlayButton">❓ كيفية اللعب</button>
+
     <button class="restart" id="restartButton">إعادة اللعب</button>
+
+    <div class="modal-overlay" id="howToPlayModal">
+        <div class="how-to-play-box">
+            <div class="how-title">🎮 كيفية اللعب</div>
+
+            <div class="how-content">
+                <p>1️⃣ تظهر لك مسألة جمع.</p>
+                <p>2️⃣ لديك <strong>10 ثوانٍ</strong> لاختيار الإجابة.</p>
+                <p>3️⃣ اختر الإجابة الصحيحة من المربعات الثلاثة.</p>
+                <p>4️⃣ الإجابة الخاطئة أو انتهاء الوقت يُحسب خطأ.</p>
+                <p>5️⃣ تحتاج إلى <strong>5 إجابات صحيحة</strong> للانتقال للمستوى التالي.</p>
+                <p>6️⃣ كلما ارتفع المستوى أصبحت الأرقام أكبر.</p>
+                <p>7️⃣ 🔥 السلسلة هي عدد الإجابات الصحيحة المتتالية بدون خطأ.</p>
+                <p>8️⃣ 🏆 الهدف هو إكمال جميع <strong>11 مستوى</strong> وتحقيق أعلى نقاط.</p>
+
+                <div class="speed-note">
+                    ⚡ كلما كانت إجابتك أسرع، زادت نقاطك!
+                </div>
+            </div>
+
+            <button class="close-how" id="closeHowToPlay">حسنًا، فهمت 👍</button>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -318,6 +431,9 @@ const box2 = document.getElementById("box2");
 const answersBox = document.getElementById("answers");
 const message = document.getElementById("message");
 const restartButton = document.getElementById("restartButton");
+const howToPlayButton = document.getElementById("howToPlayButton");
+const howToPlayModal = document.getElementById("howToPlayModal");
+const closeHowToPlay = document.getElementById("closeHowToPlay");
 
 /* =========================================
    الصوت - Web Audio API
@@ -835,6 +951,22 @@ restartButton.addEventListener("click", () => {
     setMessage("");
 
     newQuestion();
+});
+
+/* كيفية اللعب */
+howToPlayButton.addEventListener("click", function() {
+    initAudio();
+    howToPlayModal.classList.add("show");
+});
+
+closeHowToPlay.addEventListener("click", function() {
+    howToPlayModal.classList.remove("show");
+});
+
+howToPlayModal.addEventListener("click", function(event) {
+    if (event.target === howToPlayModal) {
+        howToPlayModal.classList.remove("show");
+    }
 });
 
 /* تشغيل اللعبة */
