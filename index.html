@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable=yes">
 <title>تحدي الجمع</title>
 <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -1079,8 +1079,7 @@ function timerFinished(myQuestionId) {
 }
 
 /* =========================================
-   التعديل الأول
-   إنشاء العملية العشوائية
+   العمليات العشوائية
    ========================================= */
 
 function createRandomOperation() {
@@ -1129,10 +1128,6 @@ function createQuestion() {
     let n1;
     let n2;
 
-    /* =========================
-       الجمع
-       ========================= */
-
     if (currentOperation === "+") {
 
         n1 = randomInt(
@@ -1147,14 +1142,8 @@ function createQuestion() {
 
         correctAnswer =
             n1 + n2;
-    }
 
-    /* =========================
-       الطرح
-       لا توجد نتيجة سالبة
-       ========================= */
-
-    else if (currentOperation === "-") {
+    } else if (currentOperation === "-") {
 
         n1 = randomInt(
             minimum,
@@ -1176,14 +1165,8 @@ function createQuestion() {
 
         correctAnswer =
             n1 - n2;
-    }
 
-    /* =========================
-       الضرب
-       الأرقام من 1 إلى 10
-       ========================= */
-
-    else if (currentOperation === "*") {
+    } else if (currentOperation === "*") {
 
         n1 = randomInt(1, 10);
 
@@ -1191,25 +1174,15 @@ function createQuestion() {
 
         correctAnswer =
             n1 * n2;
-    }
 
-    /* =========================
-       القسمة
-       الناتج من 1 إلى 10
-       وبدون كسور
-       ========================= */
+    } else {
 
-    else {
-
-        // نختار الناتج من 1 إلى 10
         const quotient =
             randomInt(1, 10);
 
-        // نختار المقسوم عليه من 1 إلى 10
         const divisor =
             randomInt(1, 10);
 
-        // المقسوم = الناتج × المقسوم عليه
         const dividend =
             quotient * divisor;
 
@@ -1231,7 +1204,7 @@ function createQuestion() {
 }
 
 /* =========================================
-   إنشاء الإجابات
+   الإجابات
    ========================================= */
 
 function createAnswers() {
@@ -1420,8 +1393,6 @@ function newQuestion() {
     box2.textContent =
         number2;
 
-    /* عرض علامة العملية */
-
     if (currentOperation === "+") {
 
         operatorElement.textContent =
@@ -1459,7 +1430,7 @@ function newQuestion() {
 }
 
 /* =========================================
-   حساب النقاط
+   النقاط
    ========================================= */
 
 function calculatePoints() {
@@ -1512,10 +1483,6 @@ function answerPressed(event) {
         Number(
             sender.dataset.position
         );
-
-    /* =========================
-       صحيحة
-       ========================= */
 
     if (
         selectedPosition ===
@@ -1573,7 +1540,13 @@ function answerPressed(event) {
 
         updateLabels();
 
+        /* =====================================
+           أكمل 5 إجابات صحيحة في المستوى
+           ===================================== */
+
         if (correctCount >= 5) {
+
+            /* المستوى الأخير */
 
             if (
                 level >=
@@ -1595,7 +1568,15 @@ function answerPressed(event) {
                 return;
             }
 
+            /* الانتقال للمستوى التالي */
+
             level++;
+
+            /* ⭐ التصحيح المهم:
+               تصفير عداد الإجابات الصحيحة
+               للمستوى الجديد */
+
+            correctCount = 0;
 
             achievedLevel =
                 Math.max(
@@ -1632,12 +1613,10 @@ function answerPressed(event) {
 
         } else {
 
+            /* لم يكمل 5 أسئلة بعد */
+
             newQuestion();
         }
-
-    /* =========================
-       خاطئة
-       ========================= */
 
     } else {
 
