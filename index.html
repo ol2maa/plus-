@@ -7,6 +7,7 @@
 <title>تحدي الجمع</title>
 <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
     html, body {
         margin: 0;
         padding: 0;
@@ -51,9 +52,6 @@
         margin-bottom: 14px;
     }
 
-    /* =========================
-       شريط الوقت
-       ========================= */
     .timer-wrap {
         width: 100%;
         margin: 0 auto 18px;
@@ -85,9 +83,6 @@
         transition: width .08s linear, background-color .2s ease;
     }
 
-    /* =========================
-       شريط الأخطاء
-       ========================= */
     .mistakes-wrap {
         margin: 0 auto 20px;
     }
@@ -108,9 +103,6 @@
         transition: width .2s ease;
     }
 
-    /* =========================
-       المسألة
-       ========================= */
     .equation {
         display: flex;
         direction: ltr;
@@ -142,9 +134,6 @@
         width: 25px;
     }
 
-    /* =========================
-       الإجابات
-       ========================= */
     .answers {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -295,15 +284,27 @@
     }
 
     @media (max-width: 360px) {
-        .game { padding-left: 12px; padding-right: 12px; }
-        .number-box { width: 78px; height: 78px; font-size: 35px; }
-        .answer { font-size: 27px; }
+        .game {
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+
+        .number-box {
+            width: 78px;
+            height: 78px;
+            font-size: 35px;
+        }
+
+        .answer {
+            font-size: 27px;
+        }
     }
 </style>
 </head>
 
 <body>
 <div class="game">
+
     <h1>🧮 تحدي الجمع</h1>
 
     <div class="level" id="levelLabel"></div>
@@ -314,6 +315,7 @@
             <span>⏱ الوقت</span>
             <span id="timerText">10 ث</span>
         </div>
+
         <div class="timer-track">
             <div class="timer-bar" id="timerBar"></div>
         </div>
@@ -324,49 +326,77 @@
             <span>❌ الأخطاء</span>
             <span id="mistakesText">0 / 5</span>
         </div>
+
         <div class="mistake-track">
             <div class="mistake-bar" id="mistakeBar"></div>
         </div>
     </div>
 
     <div class="equation">
+
         <div class="number-box blue" id="box1">1</div>
-        <div class="operator">+</div>
+
+        <div class="operator" id="operator">+</div>
+
         <div class="number-box green" id="box2">1</div>
+
         <div class="operator">=</div>
+
     </div>
 
     <div class="answers" id="answers"></div>
 
     <div class="message" id="message"></div>
 
-    <button class="how-to-play" id="howToPlayButton">❓ كيفية اللعب</button>
+    <button class="how-to-play" id="howToPlayButton">
+        ❓ كيفية اللعب
+    </button>
 
-    <button class="restart" id="restartButton">إعادة اللعب</button>
+    <button class="restart" id="restartButton">
+        إعادة اللعب
+    </button>
 
     <div class="modal-overlay" id="howToPlayModal">
+
         <div class="how-to-play-box">
+
             <div class="how-title">🎮 كيفية اللعب</div>
 
             <div class="how-content">
-                <p>1️⃣ تظهر لك مسألة جمع.</p>
-                <p>2️⃣ لديك <strong>10 ثوانٍ</strong> لاختيار الإجابة.</p>
-                <p>3️⃣ اختر الإجابة الصحيحة من المربعات الثلاثة.</p>
-                <p>4️⃣ الإجابة الخاطئة أو انتهاء الوقت يُحسب خطأ.</p>
-                <p>5️⃣ تحتاج إلى <strong>5 إجابات صحيحة</strong> للانتقال للمستوى التالي.</p>
-                <p>6️⃣ كلما ارتفع المستوى أصبحت الأرقام أكبر.</p>
-                <p>7️⃣ 🔥 السلسلة هي عدد الإجابات الصحيحة المتتالية بدون خطأ.</p>
-                <p>8️⃣ 🏆 الهدف هو إكمال جميع <strong>11 مستوى</strong> وتحقيق أعلى نقاط.</p>
+
+                <p>1️⃣ تظهر لك مسألة حسابية.</p>
+
+                <p>2️⃣ العملية تتغير عشوائيًا بين الجمع والطرح والضرب والقسمة.</p>
+
+                <p>3️⃣ لديك <strong>10 ثوانٍ</strong> لاختيار الإجابة.</p>
+
+                <p>4️⃣ اختر الإجابة الصحيحة من المربعات الثلاثة.</p>
+
+                <p>5️⃣ الإجابة الخاطئة أو انتهاء الوقت يُحسب خطأ.</p>
+
+                <p>6️⃣ تحتاج إلى <strong>5 إجابات صحيحة</strong> للانتقال للمستوى التالي.</p>
+
+                <p>7️⃣ كلما ارتفع المستوى أصبحت أرقام الجمع والطرح أكبر.</p>
+
+                <p>8️⃣ 🔥 السلسلة هي عدد الإجابات الصحيحة المتتالية بدون خطأ.</p>
+
+                <p>9️⃣ 🏆 الهدف هو إكمال جميع <strong>11 مستوى</strong> وتحقيق أعلى نقاط.</p>
 
                 <div class="speed-note">
                     ⚡ كلما كانت إجابتك أسرع، زادت نقاطك!<br>
-🎯 إكمال المستوى بدون أخطاء يمنحك +50 نقطة.
+                    🎯 إكمال المستوى بدون أخطاء يمنحك +50 نقطة.
                 </div>
+
             </div>
 
-            <button class="close-how" id="closeHowToPlay">حسنًا، فهمت 👍</button>
+            <button class="close-how" id="closeHowToPlay">
+                حسنًا، فهمت 👍
+            </button>
+
         </div>
+
     </div>
+
 </div>
 
 <script>
@@ -375,6 +405,7 @@
 /* =========================================
    إعدادات اللعبة
    ========================================= */
+
 const TIME_LIMIT = 10;
 const MAX_MISTAKES = 5;
 
@@ -395,558 +426,1261 @@ const levels = [
 /* =========================================
    حالة اللعبة
    ========================================= */
+
 let level = 0;
+
 let correctCount = 0;
 let mistakes = 0;
 let levelMistakes = 0;
 let achievedLevel = -1;
 
 let score = 0;
+
 let streak = 0;
 let bestStreak = 0;
 
 let number1 = 0;
 let number2 = 0;
+
 let correctAnswer = 0;
+
 let correctPosition = 0;
 let previousCorrectPosition = -1;
+
 let previousQuestion = null;
+let previousOperation = null;
+
+let currentOperation = "+";
 
 let gameOver = false;
 let waiting = false;
 
 let timerInterval = null;
 let questionId = 0;
+
 let questionStart = 0;
+
 let pausedByHelp = false;
 let pausedRemaining = TIME_LIMIT;
 
 /* =========================================
    عناصر الواجهة
    ========================================= */
+
 const levelLabel = document.getElementById("levelLabel");
 const progressLabel = document.getElementById("progressLabel");
+
 const timerText = document.getElementById("timerText");
 const timerBar = document.getElementById("timerBar");
+
 const mistakesText = document.getElementById("mistakesText");
 const mistakeBar = document.getElementById("mistakeBar");
+
 const box1 = document.getElementById("box1");
 const box2 = document.getElementById("box2");
+
+const operatorElement = document.getElementById("operator");
+
 const answersBox = document.getElementById("answers");
+
 const message = document.getElementById("message");
+
 const restartButton = document.getElementById("restartButton");
-const howToPlayButton = document.getElementById("howToPlayButton");
-const howToPlayModal = document.getElementById("howToPlayModal");
-const closeHowToPlay = document.getElementById("closeHowToPlay");
+
+const howToPlayButton =
+    document.getElementById("howToPlayButton");
+
+const howToPlayModal =
+    document.getElementById("howToPlayModal");
+
+const closeHowToPlay =
+    document.getElementById("closeHowToPlay");
 
 /* =========================================
-   الصوت - Web Audio API
-   لا يحتاج أي ملفات خارجية
+   الصوت
    ========================================= */
+
 let audioContext = null;
 
 function initAudio() {
+
     if (!audioContext) {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if (AudioCtx) audioContext = new AudioCtx();
+
+        const AudioCtx =
+            window.AudioContext ||
+            window.webkitAudioContext;
+
+        if (AudioCtx) {
+            audioContext = new AudioCtx();
+        }
     }
 
-    if (audioContext && audioContext.state === "suspended") {
+    if (
+        audioContext &&
+        audioContext.state === "suspended"
+    ) {
         audioContext.resume().catch(() => {});
     }
 }
 
-function playTone(frequency, startTime, duration, volume, type) {
+function playTone(
+    frequency,
+    startTime,
+    duration,
+    volume,
+    type
+) {
+
     if (!audioContext) return;
 
-    const oscillator = audioContext.createOscillator();
-    const gain = audioContext.createGain();
+    const oscillator =
+        audioContext.createOscillator();
 
-    oscillator.type = type || "sine";
-    oscillator.frequency.setValueAtTime(frequency, startTime);
+    const gain =
+        audioContext.createGain();
+
+    oscillator.type =
+        type || "sine";
+
+    oscillator.frequency.setValueAtTime(
+        frequency,
+        startTime
+    );
 
     oscillator.connect(gain);
     gain.connect(audioContext.destination);
 
-    gain.gain.setValueAtTime(0.001, startTime);
-    gain.gain.exponentialRampToValueAtTime(volume, startTime + 0.015);
-    gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+    gain.gain.setValueAtTime(
+        0.001,
+        startTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        volume,
+        startTime + 0.015
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        startTime + duration
+    );
 
     oscillator.start(startTime);
-    oscillator.stop(startTime + duration + 0.02);
+
+    oscillator.stop(
+        startTime + duration + 0.02
+    );
 }
 
 function playSound(correct) {
+
     try {
+
         initAudio();
+
         if (!audioContext) return;
 
-        const now = audioContext.currentTime;
+        const now =
+            audioContext.currentTime;
 
         if (correct) {
-            // صوت الإجابة الصحيحة
-            playTone(660, now, 0.10, 0.12, "sine");
-            playTone(880, now + 0.09, 0.14, 0.14, "sine");
+
+            playTone(
+                660,
+                now,
+                0.10,
+                0.12,
+                "sine"
+            );
+
+            playTone(
+                880,
+                now + 0.09,
+                0.14,
+                0.14,
+                "sine"
+            );
+
         } else {
-            // صوت الإجابة الخاطئة
-            playTone(240, now, 0.16, 0.14, "sawtooth");
-            playTone(170, now + 0.13, 0.20, 0.12, "sawtooth");
+
+            playTone(
+                240,
+                now,
+                0.16,
+                0.14,
+                "sawtooth"
+            );
+
+            playTone(
+                170,
+                now + 0.13,
+                0.20,
+                0.12,
+                "sawtooth"
+            );
         }
+
     } catch (e) {}
 }
 
 function playTimeoutSound() {
+
     try {
+
         initAudio();
+
         if (!audioContext) return;
 
-        const now = audioContext.currentTime;
+        const now =
+            audioContext.currentTime;
 
-        // صوت مختلف لانتهاء الوقت
-        playTone(520, now, 0.12, 0.12, "square");
-        playTone(420, now + 0.13, 0.12, 0.12, "square");
-        playTone(320, now + 0.26, 0.20, 0.14, "square");
+        playTone(
+            520,
+            now,
+            0.12,
+            0.12,
+            "square"
+        );
+
+        playTone(
+            420,
+            now + 0.13,
+            0.12,
+            0.12,
+            "square"
+        );
+
+        playTone(
+            320,
+            now + 0.26,
+            0.20,
+            0.14,
+            "square"
+        );
+
     } catch (e) {}
 }
 
 function playLevelUpSound() {
+
     try {
+
         initAudio();
+
         if (!audioContext) return;
 
-        const now = audioContext.currentTime;
+        const now =
+            audioContext.currentTime;
 
-        // نغمة صعود للمستوى الجديد
-        playTone(523, now, 0.12, 0.11, "sine");
-        playTone(659, now + 0.10, 0.12, 0.12, "sine");
-        playTone(784, now + 0.20, 0.12, 0.13, "sine");
-        playTone(1047, now + 0.31, 0.22, 0.15, "sine");
+        playTone(
+            523,
+            now,
+            0.12,
+            0.11,
+            "sine"
+        );
+
+        playTone(
+            659,
+            now + 0.10,
+            0.12,
+            0.12,
+            "sine"
+        );
+
+        playTone(
+            784,
+            now + 0.20,
+            0.12,
+            0.13,
+            "sine"
+        );
+
+        playTone(
+            1047,
+            now + 0.31,
+            0.22,
+            0.15,
+            "sine"
+        );
+
     } catch (e) {}
 }
 
 function playGameOverSound() {
+
     try {
+
         initAudio();
+
         if (!audioContext) return;
 
-        const now = audioContext.currentTime;
+        const now =
+            audioContext.currentTime;
 
-        // نغمة نهاية اللعبة
-        playTone(392, now, 0.15, 0.12, "sine");
-        playTone(330, now + 0.14, 0.15, 0.12, "sine");
-        playTone(262, now + 0.28, 0.25, 0.14, "sine");
+        playTone(
+            392,
+            now,
+            0.15,
+            0.12,
+            "sine"
+        );
+
+        playTone(
+            330,
+            now + 0.14,
+            0.15,
+            0.12,
+            "sine"
+        );
+
+        playTone(
+            262,
+            now + 0.28,
+            0.25,
+            0.14,
+            "sine"
+        );
+
     } catch (e) {}
 }
 
 /* =========================================
    أدوات مساعدة
    ========================================= */
+
 function randomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+
+    return Math.floor(
+        Math.random() *
+        (max - min + 1)
+    ) + min;
 }
 
 function updateLabels() {
-    levelLabel.textContent = `المستوى ${level + 1} من ${levels.length}`;
+
+    levelLabel.textContent =
+        `المستوى ${level + 1} من ${levels.length}`;
 
     progressLabel.textContent =
         `✅ ${correctCount} / 5     ⭐ ${score}     🔥 ${streak}`;
 
-    mistakesText.textContent = `${mistakes} / ${MAX_MISTAKES}`;
-    mistakeBar.style.width = `${Math.min(100, mistakes / MAX_MISTAKES * 100)}%`;
+    mistakesText.textContent =
+        `${mistakes} / ${MAX_MISTAKES}`;
+
+    mistakeBar.style.width =
+        `${Math.min(
+            100,
+            mistakes / MAX_MISTAKES * 100
+        )}%`;
 }
 
-function setMessage(text, type = "") {
+function setMessage(
+    text,
+    type = ""
+) {
+
     message.textContent = text;
+
     message.className = "message";
-    if (type) message.classList.add(type);
+
+    if (type) {
+        message.classList.add(type);
+    }
 }
 
 /* =========================================
-   شريط الوقت
+   المؤقت
    ========================================= */
+
 function updateTimerVisual(remaining) {
-    const fraction = Math.max(0, Math.min(1, remaining / TIME_LIMIT));
-    timerBar.style.width = `${fraction * 100}%`;
-    timerText.textContent = `${Math.ceil(remaining)} ث`;
+
+    const fraction =
+        Math.max(
+            0,
+            Math.min(
+                1,
+                remaining / TIME_LIMIT
+            )
+        );
+
+    timerBar.style.width =
+        `${fraction * 100}%`;
+
+    timerText.textContent =
+        `${Math.ceil(remaining)} ث`;
 
     if (fraction > 0.60) {
-        timerBar.style.backgroundColor = "#34c759";
+
+        timerBar.style.backgroundColor =
+            "#34c759";
+
     } else if (fraction > 0.30) {
-        timerBar.style.backgroundColor = "#ff9500";
+
+        timerBar.style.backgroundColor =
+            "#ff9500";
+
     } else {
-        timerBar.style.backgroundColor = "#ff3b30";
+
+        timerBar.style.backgroundColor =
+            "#ff3b30";
     }
 
     if (remaining <= 0) {
-        timerText.textContent = "0 ث";
-        timerBar.style.backgroundColor = "#ff3b30";
+
+        timerText.textContent =
+            "0 ث";
+
+        timerBar.style.backgroundColor =
+            "#ff3b30";
     }
 }
 
 function stopQuestionTimer() {
+
     if (timerInterval !== null) {
+
         clearInterval(timerInterval);
+
         timerInterval = null;
     }
+
     questionId++;
 }
 
 function pauseTimerForHelp() {
-    if (gameOver || waiting || pausedByHelp) return;
 
-    const elapsed = (performance.now() - questionStart) / 1000;
-    pausedRemaining = Math.max(0, TIME_LIMIT - elapsed);
+    if (
+        gameOver ||
+        waiting ||
+        pausedByHelp
+    ) {
+        return;
+    }
+
+    const elapsed =
+        (performance.now() -
+            questionStart) / 1000;
+
+    pausedRemaining =
+        Math.max(
+            0,
+            TIME_LIMIT - elapsed
+        );
 
     if (timerInterval !== null) {
+
         clearInterval(timerInterval);
+
         timerInterval = null;
     }
 
     pausedByHelp = true;
-    updateTimerVisual(pausedRemaining);
+
+    updateTimerVisual(
+        pausedRemaining
+    );
 }
 
 function resumeTimerAfterHelp() {
-    if (!pausedByHelp || gameOver || waiting) return;
+
+    if (
+        !pausedByHelp ||
+        gameOver ||
+        waiting
+    ) {
+        return;
+    }
 
     pausedByHelp = false;
 
-    // نكمل من نفس اللحظة التي توقف عندها المؤقت
     questionStart =
-        performance.now() - (TIME_LIMIT - pausedRemaining) * 1000;
+        performance.now() -
+        (TIME_LIMIT - pausedRemaining) * 1000;
 
-    const myQuestionId = questionId;
+    const myQuestionId =
+        questionId;
 
-    timerInterval = setInterval(() => {
-        if (gameOver || waiting || pausedByHelp || myQuestionId !== questionId) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-            return;
-        }
+    timerInterval =
+        setInterval(() => {
 
-        const elapsed = (performance.now() - questionStart) / 1000;
-        const remaining = TIME_LIMIT - elapsed;
+            if (
+                gameOver ||
+                waiting ||
+                pausedByHelp ||
+                myQuestionId !== questionId
+            ) {
 
-        updateTimerVisual(remaining);
+                clearInterval(
+                    timerInterval
+                );
 
-        if (remaining <= 0) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-            timerFinished(myQuestionId);
-        }
-    }, 50);
+                timerInterval = null;
+
+                return;
+            }
+
+            const elapsed =
+                (performance.now() -
+                    questionStart) / 1000;
+
+            const remaining =
+                TIME_LIMIT - elapsed;
+
+            updateTimerVisual(
+                remaining
+            );
+
+            if (remaining <= 0) {
+
+                clearInterval(
+                    timerInterval
+                );
+
+                timerInterval = null;
+
+                timerFinished(
+                    myQuestionId
+                );
+            }
+
+        }, 50);
 }
 
 function startQuestionTimer() {
+
     stopQuestionTimer();
 
     pausedByHelp = false;
-    pausedRemaining = TIME_LIMIT;
 
-    const myQuestionId = questionId;
-    questionStart = performance.now();
+    pausedRemaining =
+        TIME_LIMIT;
 
-    updateTimerVisual(TIME_LIMIT);
+    const myQuestionId =
+        questionId;
 
-    timerInterval = setInterval(() => {
-        if (gameOver || waiting || myQuestionId !== questionId) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-            return;
-        }
+    questionStart =
+        performance.now();
 
-        const elapsed = (performance.now() - questionStart) / 1000;
-        const remaining = TIME_LIMIT - elapsed;
+    updateTimerVisual(
+        TIME_LIMIT
+    );
 
-        updateTimerVisual(remaining);
+    timerInterval =
+        setInterval(() => {
 
-        if (remaining <= 0) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-            timerFinished(myQuestionId);
-        }
-    }, 50);
+            if (
+                gameOver ||
+                waiting ||
+                myQuestionId !== questionId
+            ) {
+
+                clearInterval(
+                    timerInterval
+                );
+
+                timerInterval = null;
+
+                return;
+            }
+
+            const elapsed =
+                (performance.now() -
+                    questionStart) / 1000;
+
+            const remaining =
+                TIME_LIMIT - elapsed;
+
+            updateTimerVisual(
+                remaining
+            );
+
+            if (remaining <= 0) {
+
+                clearInterval(
+                    timerInterval
+                );
+
+                timerInterval = null;
+
+                timerFinished(
+                    myQuestionId
+                );
+            }
+
+        }, 50);
 }
 
 function timerFinished(myQuestionId) {
-    if (gameOver || waiting || myQuestionId !== questionId) return;
 
-    // إيقاف السؤال الحالي ومنع الضغط عليه مؤقتًا
+    if (
+        gameOver ||
+        waiting ||
+        myQuestionId !== questionId
+    ) {
+        return;
+    }
+
     questionId++;
+
     waiting = true;
 
     updateTimerVisual(0);
+
     playTimeoutSound();
 
-    // انتهاء الوقت = خطأ واحد
     mistakes++;
     levelMistakes++;
+
     streak = 0;
 
     disableAnswers();
+
     updateLabels();
 
-    // لا نطلب من اللاعب الضغط على إجابة بعد انتهاء الوقت.
-    // ننتقل تلقائيًا للسؤال التالي حتى لا تتجمد اللعبة.
     if (mistakes >= MAX_MISTAKES) {
-        setMessage("⌛ انتهى الوقت", "red-text");
+
+        setMessage(
+            "⌛ انتهى الوقت",
+            "red-text"
+        );
 
         setTimeout(function() {
+
             if (!gameOver) {
                 finishGame();
             }
+
         }, 450);
 
         return;
     }
 
-    setMessage("⌛ انتهى الوقت", "red-text");
+    setMessage(
+        "⌛ انتهى الوقت",
+        "red-text"
+    );
 
-    const timeoutQuestionId = questionId;
+    const timeoutQuestionId =
+        questionId;
 
     setTimeout(function() {
-        // التأكد أن المؤقت القديم لم يعد مرتبطًا باللعبة
-        if (gameOver || timeoutQuestionId !== questionId) return;
+
+        if (
+            gameOver ||
+            timeoutQuestionId !== questionId
+        ) {
+            return;
+        }
 
         newQuestion();
+
     }, 450);
+}
+
+/* =========================================
+   التعديل الأول
+   إنشاء العملية العشوائية
+   ========================================= */
+
+function createRandomOperation() {
+
+    const operations = [
+        "+",
+        "-",
+        "*",
+        "/"
+    ];
+
+    let operation;
+
+    do {
+
+        operation =
+            operations[
+                randomInt(
+                    0,
+                    operations.length - 1
+                )
+            ];
+
+    } while (
+        operation === previousOperation
+    );
+
+    previousOperation =
+        operation;
+
+    return operation;
+}
+
+/* =========================================
+   إنشاء المسألة
+   ========================================= */
+
+function createQuestion() {
+
+    const [minimum, maximum] =
+        levels[level];
+
+    currentOperation =
+        createRandomOperation();
+
+    let n1;
+    let n2;
+
+    /* =========================
+       الجمع
+       ========================= */
+
+    if (currentOperation === "+") {
+
+        n1 = randomInt(
+            minimum,
+            maximum
+        );
+
+        n2 = randomInt(
+            minimum,
+            maximum
+        );
+
+        correctAnswer =
+            n1 + n2;
+    }
+
+    /* =========================
+       الطرح
+       لا توجد نتيجة سالبة
+       ========================= */
+
+    else if (currentOperation === "-") {
+
+        n1 = randomInt(
+            minimum,
+            maximum
+        );
+
+        n2 = randomInt(
+            minimum,
+            maximum
+        );
+
+        if (n2 > n1) {
+
+            const temp = n1;
+
+            n1 = n2;
+            n2 = temp;
+        }
+
+        correctAnswer =
+            n1 - n2;
+    }
+
+    /* =========================
+       الضرب
+       الأرقام من 1 إلى 10
+       ========================= */
+
+    else if (currentOperation === "*") {
+
+        n1 = randomInt(1, 10);
+
+        n2 = randomInt(1, 10);
+
+        correctAnswer =
+            n1 * n2;
+    }
+
+    /* =========================
+       القسمة
+       الناتج من 1 إلى 10
+       وبدون كسور
+       ========================= */
+
+    else {
+
+        // نختار الناتج من 1 إلى 10
+        const quotient =
+            randomInt(1, 10);
+
+        // نختار المقسوم عليه من 1 إلى 10
+        const divisor =
+            randomInt(1, 10);
+
+        // المقسوم = الناتج × المقسوم عليه
+        const dividend =
+            quotient * divisor;
+
+        n1 = dividend;
+        n2 = divisor;
+
+        correctAnswer =
+            quotient;
+    }
+
+    number1 = n1;
+    number2 = n2;
+
+    return [
+        n1,
+        n2,
+        currentOperation
+    ];
 }
 
 /* =========================================
    إنشاء الإجابات
    ========================================= */
+
 function createAnswers() {
-    const correct = correctAnswer;
 
-    // اختيار إجابتين خاطئتين مختلفتين
-    let wrong1 = correct + randomInt(1, 5);
-    let wrong2 = correct - randomInt(1, 5);
+    const correct =
+        correctAnswer;
 
-    if (wrong2 < 0) {
-        wrong2 = correct + randomInt(6, 10);
-    }
+    let wrong1;
+    let wrong2;
 
-    if (wrong1 === wrong2) {
-        wrong2 = correct + 7;
-    }
+    do {
 
-    let answers = [correct, wrong1, wrong2];
+        wrong1 =
+            correct +
+            randomInt(1, 5);
 
-    // اختيار مكان الإجابة الصحيحة
-    let possiblePositions = [0, 1, 2];
+        wrong2 =
+            correct -
+            randomInt(1, 5);
+
+        if (wrong2 < 0) {
+
+            wrong2 =
+                correct +
+                randomInt(6, 10);
+        }
+
+    } while (
+        wrong1 === correct ||
+        wrong2 === correct ||
+        wrong1 === wrong2
+    );
+
+    let answers = [
+        correct,
+        wrong1,
+        wrong2
+    ];
+
+    let possiblePositions = [
+        0,
+        1,
+        2
+    ];
 
     if (previousCorrectPosition >= 0) {
-        possiblePositions = possiblePositions.filter(
-            function(p) { return p !== previousCorrectPosition; }
-        );
+
+        possiblePositions =
+            possiblePositions.filter(
+                function(p) {
+                    return p !==
+                        previousCorrectPosition;
+                }
+            );
     }
 
     correctPosition =
-        possiblePositions[randomInt(0, possiblePositions.length - 1)];
+        possiblePositions[
+            randomInt(
+                0,
+                possiblePositions.length - 1
+            )
+        ];
 
-    previousCorrectPosition = correctPosition;
+    previousCorrectPosition =
+        correctPosition;
 
-    // وضع الإجابة الصحيحة في مكانها
-    let correctIndex = answers.indexOf(correct);
+    let correctIndex =
+        answers.indexOf(correct);
 
-    let temp = answers[correctIndex];
-    answers[correctIndex] = answers[correctPosition];
-    answers[correctPosition] = temp;
+    let temp =
+        answers[correctIndex];
 
-    // إنشاء المربعات
+    answers[correctIndex] =
+        answers[correctPosition];
+
+    answers[correctPosition] =
+        temp;
+
     answersBox.innerHTML = "";
 
     for (let i = 0; i < 3; i++) {
-        let button = document.createElement("button");
 
-        button.className = "answer";
-        button.textContent = String(answers[i]);
-        button.setAttribute("data-position", String(i));
+        let button =
+            document.createElement(
+                "button"
+            );
 
-        button.addEventListener("click", answerPressed);
+        button.className =
+            "answer";
 
-        answersBox.appendChild(button);
+        button.textContent =
+            String(answers[i]);
+
+        button.setAttribute(
+            "data-position",
+            String(i)
+        );
+
+        button.addEventListener(
+            "click",
+            answerPressed
+        );
+
+        answersBox.appendChild(
+            button
+        );
     }
 }
 
 function getAnswerButtons() {
-    return Array.from(document.querySelectorAll(".answer"));
+
+    return Array.from(
+        document.querySelectorAll(
+            ".answer"
+        )
+    );
 }
 
 function disableAnswers() {
-    getAnswerButtons().forEach(button => {
-        button.disabled = true;
-    });
+
+    getAnswerButtons()
+        .forEach(button => {
+
+            button.disabled = true;
+
+        });
 }
 
 function enableAnswers() {
-    getAnswerButtons().forEach(button => {
-        button.disabled = false;
-        button.className = "answer";
-    });
+
+    getAnswerButtons()
+        .forEach(button => {
+
+            button.disabled = false;
+
+            button.className =
+                "answer";
+
+        });
 }
 
 /* =========================================
    سؤال جديد
    ========================================= */
+
 function newQuestion() {
+
     if (gameOver) return;
 
     waiting = false;
 
-    const [minimum, maximum] = levels[level];
-
-    let n1, n2, question;
+    let question;
 
     do {
-        if (level < 3) {
-            n1 = randomInt(minimum, maximum);
-            n2 = randomInt(minimum, maximum);
-        } else {
-            const randomPosition = randomInt(1, 2);
 
-            if (randomPosition === 1) {
-                n1 = randomInt(1, maximum);
-                n2 = randomInt(minimum, maximum);
-            } else {
-                n1 = randomInt(minimum, maximum);
-                n2 = randomInt(1, maximum);
-            }
-        }
+        const created =
+            createQuestion();
 
-        question = [n1, n2].join(",");
-    } while (question === previousQuestion);
+        number1 =
+            created[0];
 
-    previousQuestion = question;
+        number2 =
+            created[1];
 
-    number1 = n1;
-    number2 = n2;
-    correctAnswer = number1 + number2;
+        currentOperation =
+            created[2];
 
-    box1.textContent = number1;
-    box2.textContent = number2;
+        question =
+            [
+                number1,
+                currentOperation,
+                number2
+            ].join(",");
+
+    } while (
+        question === previousQuestion
+    );
+
+    previousQuestion =
+        question;
+
+    box1.textContent =
+        number1;
+
+    box2.textContent =
+        number2;
+
+    /* عرض علامة العملية */
+
+    if (currentOperation === "+") {
+
+        operatorElement.textContent =
+            "+";
+
+    } else if (
+        currentOperation === "-"
+    ) {
+
+        operatorElement.textContent =
+            "−";
+
+    } else if (
+        currentOperation === "*"
+    ) {
+
+        operatorElement.textContent =
+            "×";
+
+    } else {
+
+        operatorElement.textContent =
+            "÷";
+    }
 
     createAnswers();
+
     enableAnswers();
 
     setMessage("");
+
     updateLabels();
+
     startQuestionTimer();
 }
 
 /* =========================================
-   النقاط - نفس طريقة Python الحالية
+   حساب النقاط
    ========================================= */
-function calculatePoints() {
-    // 10 نقاط أساسية + 5 نقاط لكل ثانية كاملة متبقية.
-    const elapsed = (performance.now() - questionStart) / 1000;
-    const remainingSeconds = Math.max(
-        0,
-        Math.min(TIME_LIMIT, Math.ceil(TIME_LIMIT - elapsed))
-    );
 
-    return 10 + (remainingSeconds * 5);
+function calculatePoints() {
+
+    const elapsed =
+        (performance.now() -
+            questionStart) / 1000;
+
+    const remainingSeconds =
+        Math.max(
+            0,
+            Math.min(
+                TIME_LIMIT,
+                Math.ceil(
+                    TIME_LIMIT -
+                    elapsed
+                )
+            )
+        );
+
+    return 10 +
+        (remainingSeconds * 5);
 }
 
 /* =========================================
    الإجابة
    ========================================= */
+
 function answerPressed(event) {
+
     initAudio();
 
-    const sender = event.currentTarget;
+    const sender =
+        event.currentTarget;
 
-    if (gameOver || waiting) return;
+    if (
+        gameOver ||
+        waiting
+    ) {
+        return;
+    }
 
     stopQuestionTimer();
+
     waiting = true;
+
     disableAnswers();
 
-    const selectedPosition = Number(sender.dataset.position);
+    const selectedPosition =
+        Number(
+            sender.dataset.position
+        );
 
     /* =========================
        صحيحة
        ========================= */
-    if (selectedPosition === correctPosition) {
+
+    if (
+        selectedPosition ===
+        correctPosition
+    ) {
+
         playSound(true);
 
         correctCount++;
+
         streak++;
 
-        bestStreak = Math.max(bestStreak, streak);
+        bestStreak =
+            Math.max(
+                bestStreak,
+                streak
+            );
 
-        const points = calculatePoints();
+        const points =
+            calculatePoints();
+
         score += points;
 
-        achievedLevel = Math.max(achievedLevel, level);
+        achievedLevel =
+            Math.max(
+                achievedLevel,
+                level
+            );
 
-        sender.classList.add("correct");
+        sender.classList.add(
+            "correct"
+        );
 
         if (streak >= 5) {
-            setMessage(`✓ إجابة صحيحة!\n+${points} ⭐\n🔥🔥 سلسلة ×${streak}`, "green-text");
+
+            setMessage(
+                `✓ إجابة صحيحة!\n+${points} ⭐\n🔥🔥 سلسلة ×${streak}`,
+                "green-text"
+            );
+
         } else if (streak >= 3) {
-            setMessage(`✓ إجابة صحيحة!\n+${points} ⭐\n🔥 سلسلة ×${streak}`, "green-text");
+
+            setMessage(
+                `✓ إجابة صحيحة!\n+${points} ⭐\n🔥 سلسلة ×${streak}`,
+                "green-text"
+            );
+
         } else {
-            setMessage(`✓ إجابة صحيحة!\n+${points} ⭐`, "green-text");
+
+            setMessage(
+                `✓ إجابة صحيحة!\n+${points} ⭐`,
+                "green-text"
+            );
         }
 
         updateLabels();
 
         if (correctCount >= 5) {
-            if (level >= levels.length - 1) {
-                achievedLevel = levels.length - 1;
 
-                if (levelMistakes === 0) {
+            if (
+                level >=
+                levels.length - 1
+            ) {
+
+                achievedLevel =
+                    levels.length - 1;
+
+                if (
+                    levelMistakes === 0
+                ) {
+
                     score += 50;
                 }
 
                 finishGame();
+
                 return;
             }
 
             level++;
-            achievedLevel = Math.max(achievedLevel, level);
-            correctCount = 0;
 
-            if (levelMistakes === 0) {
+            achievedLevel =
+                Math.max(
+                    achievedLevel,
+                    level
+                );
+
+            if (
+                levelMistakes === 0
+            ) {
+
                 score += 50;
-                setMessage("🎉 ممتاز!\n+50 🎯 مستوى بدون أخطاء", "purple-text");
+
+                setMessage(
+                    "🎉 ممتاز!\n+50 🎯 مستوى بدون أخطاء",
+                    "purple-text"
+                );
+
             } else {
-                setMessage("🎉 ممتاز!\nانتقلت للمستوى التالي", "purple-text");
+
+                setMessage(
+                    "🎉 ممتاز!\nانتقلت للمستوى التالي",
+                    "purple-text"
+                );
             }
 
             levelMistakes = 0;
+
             updateLabels();
 
             playLevelUpSound();
 
             newQuestion();
+
         } else {
+
             newQuestion();
         }
 
     /* =========================
        خاطئة
        ========================= */
+
     } else {
+
         playSound(false);
 
         mistakes++;
+
         levelMistakes++;
+
         streak = 0;
 
-        sender.classList.add("wrong");
+        sender.classList.add(
+            "wrong"
+        );
 
-        const buttons = getAnswerButtons();
-        if (buttons[correctPosition]) {
-            buttons[correctPosition].classList.add("correct");
+        const buttons =
+            getAnswerButtons();
+
+        if (
+            buttons[correctPosition]
+        ) {
+
+            buttons[
+                correctPosition
+            ].classList.add(
+                "correct"
+            );
         }
 
-        setMessage(`✗ إجابة خاطئة\nالصحيح: ${correctAnswer}`, "red-text");
+        setMessage(
+            `✗ إجابة خاطئة\nالصحيح: ${correctAnswer}`,
+            "red-text"
+        );
+
         updateLabels();
 
-        if (mistakes >= MAX_MISTAKES) {
+        if (
+            mistakes >=
+            MAX_MISTAKES
+        ) {
+
             finishGame();
+
             return;
         }
 
@@ -957,30 +1691,42 @@ function answerPressed(event) {
 /* =========================================
    نهاية اللعبة
    ========================================= */
+
 function finishGame() {
+
     stopQuestionTimer();
 
     if (gameOver) return;
 
     gameOver = true;
+
     waiting = true;
 
     disableAnswers();
 
-    const completedAll = achievedLevel >= levels.length - 1;
+    const completedAll =
+        achievedLevel >=
+        levels.length - 1;
 
     if (completedAll) {
+
         playLevelUpSound();
+
         setTimeout(function() {
+
             playGameOverSound();
+
         }, 500);
 
         setMessage(
             `أكملت جميع المستويات!\n\n⭐ النقاط: ${score}\n🔥 أعلى سلسلة: ${bestStreak}`,
             ""
         );
+
     } else {
-        const reachedLevel = achievedLevel + 1;
+
+        const reachedLevel =
+            achievedLevel + 1;
 
         playGameOverSound();
 
@@ -990,69 +1736,116 @@ function finishGame() {
         );
     }
 
-    restartButton.style.display = "block";
+    restartButton.style.display =
+        "block";
 }
 
 /* =========================================
    إعادة اللعبة
    ========================================= */
-restartButton.addEventListener("click", () => {
-    initAudio();
 
-    stopQuestionTimer();
+restartButton.addEventListener(
+    "click",
+    () => {
 
-    level = 0;
-    correctCount = 0;
-    mistakes = 0;
-    levelMistakes = 0;
-    achievedLevel = -1;
+        initAudio();
 
-    score = 0;
-    streak = 0;
-    bestStreak = 0;
+        stopQuestionTimer();
 
-    previousCorrectPosition = -1;
-    previousQuestion = null;
+        level = 0;
 
-    gameOver = false;
-    waiting = false;
-    pausedByHelp = false;
-    pausedRemaining = TIME_LIMIT;
+        correctCount = 0;
 
-    restartButton.style.display = "block";
-    setMessage("");
+        mistakes = 0;
 
-    newQuestion();
-});
+        levelMistakes = 0;
 
-/* كيفية اللعب */
-howToPlayButton.addEventListener("click", function() {
-    initAudio();
+        achievedLevel = -1;
 
-    // إيقاف العد التنازلي أثناء قراءة التعليمات
-    pauseTimerForHelp();
+        score = 0;
 
-    howToPlayModal.classList.add("show");
-});
+        streak = 0;
+
+        bestStreak = 0;
+
+        previousCorrectPosition = -1;
+
+        previousQuestion = null;
+
+        previousOperation = null;
+
+        gameOver = false;
+
+        waiting = false;
+
+        pausedByHelp = false;
+
+        pausedRemaining =
+            TIME_LIMIT;
+
+        restartButton.style.display =
+            "block";
+
+        setMessage("");
+
+        newQuestion();
+    }
+);
+
+/* =========================================
+   كيفية اللعب
+   ========================================= */
+
+howToPlayButton.addEventListener(
+    "click",
+    function() {
+
+        initAudio();
+
+        pauseTimerForHelp();
+
+        howToPlayModal.classList.add(
+            "show"
+        );
+    }
+);
 
 function closeHowToPlayModal() {
-    howToPlayModal.classList.remove("show");
 
-    // استكمال العد من نفس النقطة التي توقف عندها
+    howToPlayModal.classList.remove(
+        "show"
+    );
+
     resumeTimerAfterHelp();
 }
 
-closeHowToPlay.addEventListener("click", closeHowToPlayModal);
+closeHowToPlay.addEventListener(
+    "click",
+    closeHowToPlayModal
+);
 
-howToPlayModal.addEventListener("click", function(event) {
-    if (event.target === howToPlayModal) {
-        closeHowToPlayModal();
+howToPlayModal.addEventListener(
+    "click",
+    function(event) {
+
+        if (
+            event.target ===
+            howToPlayModal
+        ) {
+
+            closeHowToPlayModal();
+        }
     }
-});
+);
 
-/* تشغيل اللعبة */
+/* =========================================
+   تشغيل اللعبة
+   ========================================= */
+
 updateLabels();
+
 newQuestion();
+
 </script>
 </body>
 </html>
