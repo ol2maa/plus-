@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable=yes">
 <title>تحدي الجمع</title>
+
 <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
@@ -303,6 +304,7 @@
 </head>
 
 <body>
+
 <div class="game">
 
     <h1>🧮 تحدي الجمع</h1>
@@ -311,6 +313,7 @@
     <div class="progress" id="progressLabel"></div>
 
     <div class="timer-wrap">
+
         <div class="timer-top">
             <span>⏱ الوقت</span>
             <span id="timerText">10 ث</span>
@@ -319,9 +322,11 @@
         <div class="timer-track">
             <div class="timer-bar" id="timerBar"></div>
         </div>
+
     </div>
 
     <div class="mistakes-wrap">
+
         <div class="mistakes-title">
             <span>❌ الأخطاء</span>
             <span id="mistakesText">0 / 5</span>
@@ -330,6 +335,7 @@
         <div class="mistake-track">
             <div class="mistake-bar" id="mistakeBar"></div>
         </div>
+
     </div>
 
     <div class="equation">
@@ -409,6 +415,18 @@
 const TIME_LIMIT = 10;
 const MAX_MISTAKES = 5;
 
+/* أكثر من 6 ثوانٍ = بطيء */
+const SLOW_TIME = 6;
+
+/* أقل من 6 ثوانٍ = سريع */
+const FAST_TIME = 6;
+
+/* عدد الإجابات البطيئة/السريعة المطلوبة */
+const SPEED_COUNT_REQUIRED = 3;
+
+/* أقصى عدد لجولات مكافح */
+const MAX_FIGHTER_ROUNDS = 5;
+
 const levels = [
     [1, 5],
     [5, 10],
@@ -463,29 +481,77 @@ let questionStart = 0;
 let pausedByHelp = false;
 let pausedRemaining = TIME_LIMIT;
 
+
+/* =========================================
+   نظام مكافح
+   ========================================= */
+
+/*
+   slowCorrectCount
+   عدد الإجابات الصحيحة التي أخذت أكثر من 6 ثوانٍ
+   في الجولة الحالية.
+*/
+let slowCorrectCount = 0;
+
+/*
+   fastCorrectCount
+   عدد الإجابات الصحيحة التي أخذت أقل من 6 ثوانٍ
+   في الجولة الحالية.
+*/
+let fastCorrectCount = 0;
+
+/*
+   fighterMode
+   هل اللاعب حاليًا في وضع "مكافح"؟
+*/
+let fighterMode = false;
+
+/*
+   fighterRounds
+   عدد جولات مكافح التي لعبها اللاعب في المستوى الحالي.
+*/
+let fighterRounds = 0;
+
+
 /* =========================================
    عناصر الواجهة
    ========================================= */
 
-const levelLabel = document.getElementById("levelLabel");
-const progressLabel = document.getElementById("progressLabel");
+const levelLabel =
+    document.getElementById("levelLabel");
 
-const timerText = document.getElementById("timerText");
-const timerBar = document.getElementById("timerBar");
+const progressLabel =
+    document.getElementById("progressLabel");
 
-const mistakesText = document.getElementById("mistakesText");
-const mistakeBar = document.getElementById("mistakeBar");
+const timerText =
+    document.getElementById("timerText");
 
-const box1 = document.getElementById("box1");
-const box2 = document.getElementById("box2");
+const timerBar =
+    document.getElementById("timerBar");
 
-const operatorElement = document.getElementById("operator");
+const mistakesText =
+    document.getElementById("mistakesText");
 
-const answersBox = document.getElementById("answers");
+const mistakeBar =
+    document.getElementById("mistakeBar");
 
-const message = document.getElementById("message");
+const box1 =
+    document.getElementById("box1");
 
-const restartButton = document.getElementById("restartButton");
+const box2 =
+    document.getElementById("box2");
+
+const operatorElement =
+    document.getElementById("operator");
+
+const answersBox =
+    document.getElementById("answers");
+
+const message =
+    document.getElementById("message");
+
+const restartButton =
+    document.getElementById("restartButton");
 
 const howToPlayButton =
     document.getElementById("howToPlayButton");
@@ -495,6 +561,7 @@ const howToPlayModal =
 
 const closeHowToPlay =
     document.getElementById("closeHowToPlay");
+
 
 /* =========================================
    الصوت
@@ -745,6 +812,7 @@ function playGameOverSound() {
     } catch (e) {}
 }
 
+
 /* =========================================
    أدوات مساعدة
    ========================================= */
@@ -759,8 +827,16 @@ function randomInt(min, max) {
 
 function updateLabels() {
 
-    levelLabel.textContent =
-        `المستوى ${level + 1} من ${levels.length}`;
+    if (fighterMode) {
+
+        levelLabel.textContent =
+            `المستوى ${level + 1} – مكافح 💪`;
+
+    } else {
+
+        levelLabel.textContent =
+            `المستوى ${level + 1} من ${levels.length}`;
+    }
 
     progressLabel.textContent =
         `✅ ${correctCount} / 5     ⭐ ${score}     🔥 ${streak}`;
@@ -788,6 +864,7 @@ function setMessage(
         message.classList.add(type);
     }
 }
+
 
 /* =========================================
    المؤقت
@@ -1078,6 +1155,7 @@ function timerFinished(myQuestionId) {
     }, 450);
 }
 
+
 /* =========================================
    العمليات العشوائية
    ========================================= */
@@ -1112,6 +1190,7 @@ function createRandomOperation() {
 
     return operation;
 }
+
 
 /* =========================================
    إنشاء المسألة
@@ -1202,6 +1281,7 @@ function createQuestion() {
         currentOperation
     ];
 }
+
 
 /* =========================================
    الإجابات
@@ -1347,6 +1427,7 @@ function enableAnswers() {
         });
 }
 
+
 /* =========================================
    سؤال جديد
    ========================================= */
@@ -1429,6 +1510,7 @@ function newQuestion() {
     startQuestionTimer();
 }
 
+
 /* =========================================
    النقاط
    ========================================= */
@@ -1455,6 +1537,282 @@ function calculatePoints() {
         (remainingSeconds * 5);
 }
 
+
+/* =========================================
+   التعامل مع نهاية جولة
+   ========================================= */
+
+function finishCurrentRound() {
+
+    /*
+       هنا اكتملت 5 إجابات صحيحة.
+       الأخطاء لا تؤثر على اكتمال الجولة.
+    */
+
+    /* -------------------------------------
+       اللاعب العادي
+       ------------------------------------- */
+
+    if (!fighterMode) {
+
+        /*
+           إذا كان لديه 3 إجابات صحيحة
+           أو أكثر أبطأ من 6 ثوانٍ
+           يدخل وضع مكافح.
+        */
+
+        if (
+            slowCorrectCount >=
+            SPEED_COUNT_REQUIRED
+        ) {
+
+            fighterMode = true;
+
+            fighterRounds = 1;
+
+            correctCount = 0;
+
+            slowCorrectCount = 0;
+            fastCorrectCount = 0;
+
+            setMessage(
+                `💪 المستوى ${level + 1} – مكافح\n\nسنكرر المستوى بنفس الصعوبة`,
+                "purple-text"
+            );
+
+            updateLabels();
+
+            playLevelUpSound();
+
+            setTimeout(function() {
+
+                if (!gameOver) {
+                    newQuestion();
+                }
+
+            }, 700);
+
+            return;
+        }
+
+        /*
+           اللاعب سريع بما يكفي.
+           ينتقل للمستوى التالي.
+        */
+
+        moveToNextLevel();
+
+        return;
+    }
+
+
+    /* -------------------------------------
+       اللاعب في وضع مكافح
+       ------------------------------------- */
+
+    if (fighterMode) {
+
+        /*
+           إذا حقق 3 إجابات صحيحة
+           أو أكثر في أقل من 6 ثوانٍ
+           يخرج من مكافح.
+        */
+
+        if (
+            fastCorrectCount >=
+            SPEED_COUNT_REQUIRED
+        ) {
+
+            fighterMode = false;
+
+            fighterRounds = 0;
+
+            correctCount = 0;
+
+            slowCorrectCount = 0;
+            fastCorrectCount = 0;
+
+            setMessage(
+                "⚡ ممتاز!\nتحسنت سرعتك وانتقلت للمستوى التالي",
+                "purple-text"
+            );
+
+            updateLabels();
+
+            playLevelUpSound();
+
+            setTimeout(function() {
+
+                if (!gameOver) {
+                    moveToNextLevel();
+                }
+
+            }, 700);
+
+            return;
+        }
+
+        /*
+           لم يتحسن بما يكفي.
+           إذا لم يصل للحد الأقصى،
+           نعطيه جولة مكافح جديدة.
+        */
+
+        if (
+            fighterRounds <
+            MAX_FIGHTER_ROUNDS
+        ) {
+
+            fighterRounds++;
+
+            correctCount = 0;
+
+            slowCorrectCount = 0;
+            fastCorrectCount = 0;
+
+            setMessage(
+                `💪 مكافح\nالجولة ${fighterRounds} من ${MAX_FIGHTER_ROUNDS}`,
+                "purple-text"
+            );
+
+            updateLabels();
+
+            setTimeout(function() {
+
+                if (!gameOver) {
+                    newQuestion();
+                }
+
+            }, 700);
+
+            return;
+        }
+
+        /*
+           انتهت 5 جولات مكافح
+           بدون تحسن كافٍ.
+        */
+
+        finishGameAtCurrentLevel();
+
+        return;
+    }
+}
+
+
+/* =========================================
+   الانتقال للمستوى التالي
+   ========================================= */
+
+function moveToNextLevel() {
+
+    /*
+       المستوى الأخير
+    */
+
+    if (
+        level >=
+        levels.length - 1
+    ) {
+
+        achievedLevel =
+            levels.length - 1;
+
+        if (
+            levelMistakes === 0
+        ) {
+
+            score += 50;
+        }
+
+        finishGame();
+
+        return;
+    }
+
+    /*
+       مكافأة المستوى بدون أخطاء
+    */
+
+    if (
+        levelMistakes === 0
+    ) {
+
+        score += 50;
+    }
+
+    level++;
+
+    correctCount = 0;
+
+    levelMistakes = 0;
+
+    slowCorrectCount = 0;
+    fastCorrectCount = 0;
+
+    fighterMode = false;
+    fighterRounds = 0;
+
+    achievedLevel =
+        Math.max(
+            achievedLevel,
+            level
+        );
+
+    setMessage(
+        levelMistakes === 0
+            ? "🎉 ممتاز!\nانتقلت للمستوى التالي"
+            : "🎉 ممتاز!\nانتقلت للمستوى التالي",
+        "purple-text"
+    );
+
+    updateLabels();
+
+    playLevelUpSound();
+
+    setTimeout(function() {
+
+        if (!gameOver) {
+            newQuestion();
+        }
+
+    }, 500);
+}
+
+
+/* =========================================
+   نهاية اللعبة عند التوقف في مستوى مكافح
+   ========================================= */
+
+function finishGameAtCurrentLevel() {
+
+    stopQuestionTimer();
+
+    if (gameOver) return;
+
+    gameOver = true;
+
+    waiting = true;
+
+    disableAnswers();
+
+    playGameOverSound();
+
+    /*
+       نستخدم المستوى الحالي،
+       وليس مستوى أقل منه.
+    */
+
+    setMessage(
+        `أحسنت! 👏\n\nوصلت إلى: المستوى ${level + 1}\n\n⭐ النقاط: ${score}\n🔥 أعلى سلسلة: ${bestStreak}`,
+        ""
+    );
+
+    restartButton.style.display =
+        "block";
+}
+
+
 /* =========================================
    الإجابة
    ========================================= */
@@ -1472,6 +1830,14 @@ function answerPressed(event) {
     ) {
         return;
     }
+
+    /*
+       نحسب الزمن قبل إيقاف المؤقت.
+    */
+
+    const elapsed =
+        (performance.now() -
+            questionStart) / 1000;
 
     stopQuestionTimer();
 
@@ -1516,6 +1882,29 @@ function answerPressed(event) {
             "correct"
         );
 
+
+        /* =====================================
+           حساب سرعة الإجابة الصحيحة
+           ===================================== */
+
+        if (
+            elapsed > SLOW_TIME
+        ) {
+
+            slowCorrectCount++;
+
+        } else if (
+            elapsed < FAST_TIME
+        ) {
+
+            fastCorrectCount++;
+        }
+
+
+        /* =====================================
+           الرسالة
+           ===================================== */
+
         if (streak >= 5) {
 
             setMessage(
@@ -1540,83 +1929,24 @@ function answerPressed(event) {
 
         updateLabels();
 
+
         /* =====================================
-           أكمل 5 إجابات صحيحة في المستوى
+           اكتملت 5 إجابات صحيحة
            ===================================== */
 
         if (correctCount >= 5) {
 
-            /* المستوى الأخير */
+            finishCurrentRound();
 
-            if (
-                level >=
-                levels.length - 1
-            ) {
-
-                achievedLevel =
-                    levels.length - 1;
-
-                if (
-                    levelMistakes === 0
-                ) {
-
-                    score += 50;
-                }
-
-                finishGame();
-
-                return;
-            }
-
-            /* الانتقال للمستوى التالي */
-
-            level++;
-
-            /* ⭐ التصحيح المهم:
-               تصفير عداد الإجابات الصحيحة
-               للمستوى الجديد */
-
-            correctCount = 0;
-
-            achievedLevel =
-                Math.max(
-                    achievedLevel,
-                    level
-                );
-
-            if (
-                levelMistakes === 0
-            ) {
-
-                score += 50;
-
-                setMessage(
-                    "🎉 ممتاز!\n+50 🎯 مستوى بدون أخطاء",
-                    "purple-text"
-                );
-
-            } else {
-
-                setMessage(
-                    "🎉 ممتاز!\nانتقلت للمستوى التالي",
-                    "purple-text"
-                );
-            }
-
-            levelMistakes = 0;
-
-            updateLabels();
-
-            playLevelUpSound();
-
-            newQuestion();
-
-        } else {
-
-            /* لم يكمل 5 أسئلة بعد */
-
-            newQuestion();
+            return;
         }
+
+
+        /* =====================================
+           لم تكتمل الخمس إجابات الصحيحة
+           ===================================== */
+
+        newQuestion();
 
     } else {
 
@@ -1666,6 +1996,7 @@ function answerPressed(event) {
         newQuestion();
     }
 }
+
 
 /* =========================================
    نهاية اللعبة
@@ -1719,6 +2050,7 @@ function finishGame() {
         "block";
 }
 
+
 /* =========================================
    إعادة اللعبة
    ========================================= */
@@ -1762,6 +2094,18 @@ restartButton.addEventListener(
         pausedRemaining =
             TIME_LIMIT;
 
+        /*
+           إعادة نظام مكافح
+        */
+
+        slowCorrectCount = 0;
+
+        fastCorrectCount = 0;
+
+        fighterMode = false;
+
+        fighterRounds = 0;
+
         restartButton.style.display =
             "block";
 
@@ -1770,6 +2114,7 @@ restartButton.addEventListener(
         newQuestion();
     }
 );
+
 
 /* =========================================
    كيفية اللعب
@@ -1817,6 +2162,7 @@ howToPlayModal.addEventListener(
     }
 );
 
+
 /* =========================================
    تشغيل اللعبة
    ========================================= */
@@ -1826,5 +2172,6 @@ updateLabels();
 newQuestion();
 
 </script>
+
 </body>
 </html>
