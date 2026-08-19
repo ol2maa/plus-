@@ -415,16 +415,11 @@
 const TIME_LIMIT = 10;
 const MAX_MISTAKES = 5;
 
-/* أكثر من 6 ثوانٍ = بطيء */
 const SLOW_TIME = 6;
-
-/* أقل من 6 ثوانٍ = سريع */
 const FAST_TIME = 6;
 
-/* عدد الإجابات البطيئة/السريعة المطلوبة */
 const SPEED_COUNT_REQUIRED = 3;
 
-/* أقصى عدد لجولات مكافح */
 const MAX_FIGHTER_ROUNDS = 5;
 
 const levels = [
@@ -440,6 +435,7 @@ const levels = [
     [80, 90],
     [90, 100]
 ];
+
 
 /* =========================================
    حالة اللعبة
@@ -486,30 +482,10 @@ let pausedRemaining = TIME_LIMIT;
    نظام مكافح
    ========================================= */
 
-/*
-   slowCorrectCount
-   عدد الإجابات الصحيحة التي أخذت أكثر من 6 ثوانٍ
-   في الجولة الحالية.
-*/
 let slowCorrectCount = 0;
-
-/*
-   fastCorrectCount
-   عدد الإجابات الصحيحة التي أخذت أقل من 6 ثوانٍ
-   في الجولة الحالية.
-*/
 let fastCorrectCount = 0;
 
-/*
-   fighterMode
-   هل اللاعب حاليًا في وضع "مكافح"؟
-*/
 let fighterMode = false;
-
-/*
-   fighterRounds
-   عدد جولات مكافح التي لعبها اللاعب في المستوى الحالي.
-*/
 let fighterRounds = 0;
 
 
@@ -1515,11 +1491,7 @@ function newQuestion() {
    النقاط
    ========================================= */
 
-function calculatePoints() {
-
-    const elapsed =
-        (performance.now() -
-            questionStart) / 1000;
+function calculatePoints(elapsed) {
 
     const remainingSeconds =
         Math.max(
@@ -1545,8 +1517,7 @@ function calculatePoints() {
 function finishCurrentRound() {
 
     /*
-       هنا اكتملت 5 إجابات صحيحة.
-       الأخطاء لا تؤثر على اكتمال الجولة.
+       اكتملت 5 إجابات صحيحة.
     */
 
     /* -------------------------------------
@@ -1556,9 +1527,9 @@ function finishCurrentRound() {
     if (!fighterMode) {
 
         /*
-           إذا كان لديه 3 إجابات صحيحة
+           إذا كانت لديه 3 إجابات صحيحة
            أو أكثر أبطأ من 6 ثوانٍ
-           يدخل وضع مكافح.
+           يدخل مكافح.
         */
 
         if (
@@ -1576,7 +1547,7 @@ function finishCurrentRound() {
             fastCorrectCount = 0;
 
             setMessage(
-                `💪 المستوى ${level + 1} – مكافح\n\nسنكرر المستوى بنفس الصعوبة`,
+                `💪 المستوى ${level + 1} – مكافح\n\nسنكرر المستوى بنفس الصعوبة\n\nإجابات مكافح لا تمنح نقاطًا`,
                 "purple-text"
             );
 
@@ -1594,11 +1565,6 @@ function finishCurrentRound() {
 
             return;
         }
-
-        /*
-           اللاعب سريع بما يكفي.
-           ينتقل للمستوى التالي.
-        */
 
         moveToNextLevel();
 
@@ -1652,9 +1618,9 @@ function finishCurrentRound() {
             return;
         }
 
+
         /*
            لم يتحسن بما يكفي.
-           إذا لم يصل للحد الأقصى،
            نعطيه جولة مكافح جديدة.
         */
 
@@ -1671,7 +1637,7 @@ function finishCurrentRound() {
             fastCorrectCount = 0;
 
             setMessage(
-                `💪 مكافح\nالجولة ${fighterRounds} من ${MAX_FIGHTER_ROUNDS}`,
+                `💪 مكافح\nالجولة ${fighterRounds} من ${MAX_FIGHTER_ROUNDS}\n\nلا توجد نقاط في مكافح`,
                 "purple-text"
             );
 
@@ -1687,6 +1653,7 @@ function finishCurrentRound() {
 
             return;
         }
+
 
         /*
            انتهت 5 جولات مكافح
@@ -1730,6 +1697,7 @@ function moveToNextLevel() {
         return;
     }
 
+
     /*
        مكافأة المستوى بدون أخطاء
     */
@@ -1740,6 +1708,7 @@ function moveToNextLevel() {
 
         score += 50;
     }
+
 
     level++;
 
@@ -1760,9 +1729,7 @@ function moveToNextLevel() {
         );
 
     setMessage(
-        levelMistakes === 0
-            ? "🎉 ممتاز!\nانتقلت للمستوى التالي"
-            : "🎉 ممتاز!\nانتقلت للمستوى التالي",
+        "🎉 ممتاز!\nانتقلت للمستوى التالي",
         "purple-text"
     );
 
@@ -1798,11 +1765,6 @@ function finishGameAtCurrentLevel() {
 
     playGameOverSound();
 
-    /*
-       نستخدم المستوى الحالي،
-       وليس مستوى أقل منه.
-    */
-
     setMessage(
         `أحسنت! 👏\n\nوصلت إلى: المستوى ${level + 1}\n\n⭐ النقاط: ${score}\n🔥 أعلى سلسلة: ${bestStreak}`,
         ""
@@ -1831,6 +1793,7 @@ function answerPressed(event) {
         return;
     }
 
+
     /*
        نحسب الزمن قبل إيقاف المؤقت.
     */
@@ -1850,6 +1813,11 @@ function answerPressed(event) {
             sender.dataset.position
         );
 
+
+    /* =====================================
+       الإجابة الصحيحة
+       ===================================== */
+
     if (
         selectedPosition ===
         correctPosition
@@ -1867,25 +1835,10 @@ function answerPressed(event) {
                 streak
             );
 
-        const points =
-            calculatePoints();
 
-        score += points;
-
-        achievedLevel =
-            Math.max(
-                achievedLevel,
-                level
-            );
-
-        sender.classList.add(
-            "correct"
-        );
-
-
-        /* =====================================
-           حساب سرعة الإجابة الصحيحة
-           ===================================== */
+        /*
+           حساب السرعة أولًا.
+        */
 
         if (
             elapsed > SLOW_TIME
@@ -1901,31 +1854,94 @@ function answerPressed(event) {
         }
 
 
+        /*
+           ==================================
+           النقاط
+           ==================================
+
+           اللاعب العادي:
+           يحصل على النقاط بشكل طبيعي.
+
+           اللاعب في مكافح:
+           لا يحصل على أي نقاط.
+        */
+
+        let points = 0;
+
+        if (!fighterMode) {
+
+            points =
+                calculatePoints(elapsed);
+
+            score += points;
+
+        }
+
+
+        achievedLevel =
+            Math.max(
+                achievedLevel,
+                level
+            );
+
+        sender.classList.add(
+            "correct"
+        );
+
+
         /* =====================================
            الرسالة
            ===================================== */
 
-        if (streak >= 5) {
+        if (fighterMode) {
 
-            setMessage(
-                `✓ إجابة صحيحة!\n+${points} ⭐\n🔥🔥 سلسلة ×${streak}`,
-                "green-text"
-            );
+            if (streak >= 5) {
 
-        } else if (streak >= 3) {
+                setMessage(
+                    `✓ إجابة صحيحة!\nلا نقاط – مكافح 💪\n🔥🔥 سلسلة ×${streak}`,
+                    "green-text"
+                );
 
-            setMessage(
-                `✓ إجابة صحيحة!\n+${points} ⭐\n🔥 سلسلة ×${streak}`,
-                "green-text"
-            );
+            } else if (streak >= 3) {
+
+                setMessage(
+                    `✓ إجابة صحيحة!\nلا نقاط – مكافح 💪\n🔥 سلسلة ×${streak}`,
+                    "green-text"
+                );
+
+            } else {
+
+                setMessage(
+                    "✓ إجابة صحيحة!\nلا نقاط – مكافح 💪",
+                    "green-text"
+                );
+            }
 
         } else {
 
-            setMessage(
-                `✓ إجابة صحيحة!\n+${points} ⭐`,
-                "green-text"
-            );
+            if (streak >= 5) {
+
+                setMessage(
+                    `✓ إجابة صحيحة!\n+${points} ⭐\n🔥🔥 سلسلة ×${streak}`,
+                    "green-text"
+                );
+
+            } else if (streak >= 3) {
+
+                setMessage(
+                    `✓ إجابة صحيحة!\n+${points} ⭐\n🔥 سلسلة ×${streak}`,
+                    "green-text"
+                );
+
+            } else {
+
+                setMessage(
+                    `✓ إجابة صحيحة!\n+${points} ⭐`,
+                    "green-text"
+                );
+            }
         }
+
 
         updateLabels();
 
@@ -1942,13 +1958,18 @@ function answerPressed(event) {
         }
 
 
-        /* =====================================
+        /*
            لم تكتمل الخمس إجابات الصحيحة
-           ===================================== */
+        */
 
         newQuestion();
 
     } else {
+
+
+        /* =====================================
+           الإجابة الخاطئة
+           ===================================== */
 
         playSound(false);
 
@@ -2093,10 +2114,6 @@ restartButton.addEventListener(
 
         pausedRemaining =
             TIME_LIMIT;
-
-        /*
-           إعادة نظام مكافح
-        */
 
         slowCorrectCount = 0;
 
